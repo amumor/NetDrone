@@ -14,7 +14,7 @@ pub struct Vec3<T> {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "cmd", content = "data")]
 pub enum Command {
-    #[serde(rename = "MOVE")]
+    #[serde(rename = "move")]
     Move(Vec3<i32>),
 }
 
