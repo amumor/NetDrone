@@ -9,7 +9,6 @@
     <Content Include="assets\sprites\drone.png" />
     <Content Include="assets\sprites\drone.png.import" />
     <Content Include="assets\sprites\drone_scene.tscn" />
-    <Content Include="assets\sprites\icon.svg" />
     <Content Include="assets\sprites\icon.svg.import" />
     <Content Include="assets\sprites\map_2.png" />
     <Content Include="assets\sprites\map_2.png.import" />

@@ -13,7 +13,6 @@ config_version=5
 config/name="NetDroneClient"
 run/main_scene="res://drone_scene.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
-config/icon="res://icon.svg"
 
 [display]
 
