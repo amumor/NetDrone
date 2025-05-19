@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-// TODO: bytte ut serde med bincode for raskere networking??
-
 /// Simple 3D vector with integer components.
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub struct Vec3<T> {

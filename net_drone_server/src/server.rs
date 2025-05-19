@@ -38,12 +38,6 @@ impl DroneServer {
                             entry.1 += y as f32;
                             entry.2 += z as f32;
                         }
-                        // Command::Land => {
-                        //     entry.2 = 0.0;
-                        // }
-                        // Command::TakeOff => {
-                        //     entry.2 = 10.0;
-                        // }
                     }
 
                     // Simulate latency
