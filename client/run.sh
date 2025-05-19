@@ -1,14 +1,7 @@
 #!/bin/bash
 
-# Name of your Godot executable (update this if needed)
-GODOT_BINARY="./Godot_v4.2-stable_mono"
-
-# Ensure the Godot binary exists
-if [ ! -f "$GODOT_BINARY" ]; then
-  echo "❌ Godot binary not found at: $GODOT_BINARY"
-  echo "Please update the GODOT_BINARY variable in this script."
-  exit 1
-fi
+# Use system-installed Godot
+GODOT_BINARY="godot"
 
 echo "🔧 Building C# project..."
 dotnet build
