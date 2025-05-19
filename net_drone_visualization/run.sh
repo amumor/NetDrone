@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Use system-installed Godot
-GODOT_BINARY="godot-mono"
+GODOT_BINARY="godot"
 
 echo "🔧 Building C# project..."
 dotnet build
