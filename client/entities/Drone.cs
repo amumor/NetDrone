@@ -1,4 +1,4 @@
-namespace NetDroneClient.assets.sprites;
+namespace NetDroneClient.entities;
 
 using Godot;
 
