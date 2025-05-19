@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://c8dl2lkga1cll" path="res://assets/sprites/map_2.png" id="1_um500"]
 [ext_resource type="Texture2D" uid="uid://ceeg648tdb3fm" path="res://assets/sprites/drone.png" id="2_ggpra"]
-[ext_resource type="Script" path="res://entities/Drone.cs" id="3_svorh"]
+[ext_resource type="Script" uid="uid://x4jbfrqjs1b5" path="res://entities/Drone.cs" id="3_svorh"]
 
 [node name="Node2D" type="Node2D"]
 
