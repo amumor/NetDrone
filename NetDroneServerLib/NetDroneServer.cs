@@ -31,7 +31,7 @@ public class NetDroneServer
       // The two tasks below allows the loop to respond to both incoming UPD packets or a cancellation token
       var receiveTask = droneListener.ReceiveAsync();
       var completedTask = await Task.WhenAny(receiveTask, Task.Delay(-1, token));
-      if (completedTask != receiveTask) break; 
+      if (completedTask != receiveTask) break;
 
       var result = receiveTask.Result;
       var json = Encoding.UTF8.GetString(result.Buffer);
@@ -42,7 +42,10 @@ public class NetDroneServer
       if (message != null)
       {
         droneEndpoints[message.DroneId] = result.RemoteEndPoint;
-        await ForwardToClientAsync(message, token);
+        if (!message.Command.Cmd.Equals(CommandType.Register))
+        {
+          await ForwardToClientAsync(message, token);
+        }
       }
     }
   }
@@ -56,7 +59,7 @@ public class NetDroneServer
       // The two tasks below allows the loop to respond to both incoming UPD packets or a cancellation token
       var receiveTask = clientListener.ReceiveAsync();
       var completedTask = await Task.WhenAny(receiveTask, Task.Delay(-1, token));
-      if (completedTask != receiveTask) break; 
+      if (completedTask != receiveTask) break;
 
       var result = receiveTask.Result;
       var json = Encoding.UTF8.GetString(result.Buffer);
@@ -67,7 +70,10 @@ public class NetDroneServer
       if (message != null)
       {
         clientEndpoints[message.DroneId] = result.RemoteEndPoint;
-        await ForwardToDroneAsync(message, token);
+        if (!message.Command.Cmd.Equals(CommandType.Register))
+        {
+          await ForwardToDroneAsync(message, token);
+        }
       }
     }
   }
