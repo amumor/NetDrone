@@ -13,7 +13,7 @@ public class Vec3<T>
 
     [JsonPropertyName("z")]
     public T Z { get; set; }
-    
+
     public Vec3(T x, T y, T z)
     {
         X = x;
@@ -26,7 +26,9 @@ public class Vec3<T>
 public enum CommandType
 {
     [EnumMember(Value = "move")]
-    Move
+    Move,
+    [EnumMember(Value = "location")]
+    Location
 }
 
 public class Command
