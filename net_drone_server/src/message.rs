@@ -22,7 +22,7 @@ pub enum Command {
 pub enum ClientMessage {
     #[serde(rename = "command")]
     Command {
-        drone_id: String,
+        drone_id: i32,
         command: Command,
     },
 }
@@ -33,7 +33,7 @@ pub enum ClientMessage {
 pub enum ServerMessage {
     #[serde(rename = "state")]
     State {
-        drone_id: String,
+        drone_id: i32,
         x: f32,
         y: f32,
         z: f32,
