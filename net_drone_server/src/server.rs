@@ -1,4 +1,4 @@
-use crate::message::{ClientMessage, Command, ServerMessage, Vec3};
+use crate::message::{Command, Message, Vec3};
 use std::collections::HashMap;
 use std::net::SocketAddr;
 use tokio::net::UdpSocket;
@@ -6,7 +6,7 @@ use tokio::time::{sleep, Duration};
 
 pub struct DroneServer {
     // x, y, z
-    drone_states: HashMap<String, (f32, f32, f32)>,
+    drone_states: HashMap<i32, (f32, f32, f32)>,
 }
 
 impl DroneServer {
@@ -22,15 +22,12 @@ impl DroneServer {
         data: &[u8],
         addr: SocketAddr,
     ) -> anyhow::Result<()> {
-        if let Ok(msg) = serde_json::from_slice::<ClientMessage>(data) {
+        if let Ok(msg) = serde_json::from_slice::<Message>(data) {
             println!("📥 Received from {}: {:?}", addr, msg);
 
             match msg {
-                ClientMessage::Command { drone_id, command } => {
-                    let entry = self
-                        .drone_states
-                        .entry(drone_id.clone())
-                        .or_insert((0.0, 0.0, 0.0));
+                Message::Command { drone_id, command } => {
+                    let entry = self.drone_states.entry(drone_id).or_insert((0.0, 0.0, 0.0));
 
                     match command {
                         Command::Move(Vec3 { x, y, z }) => {
@@ -38,20 +35,22 @@ impl DroneServer {
                             entry.1 += y as f32;
                             entry.2 += z as f32;
                         }
+                        Command::Pos(pos) => {
+                            if pos.len() == 3 {
+                                entry.0 = pos[0] as f32;
+                                entry.1 = pos[1] as f32;
+                                entry.2 = pos[2] as f32;
+                            } else {
+                                eprintln!("⚠️ Invalid position data: {:?}", pos);
+                            }
+                        }
                     }
 
                     // Simulate latency
                     sleep(Duration::from_millis(150)).await;
 
-                    let response = ServerMessage::State {
-                        drone_id,
-                        x: entry.0,
-                        y: entry.1,
-                        z: entry.2,
-                    };
-
-                    let json = serde_json::to_vec(&response)?;
-                    socket.send_to(&json, addr).await?;
+                    let response = serde_json::to_vec(&entry)?;
+                    socket.send_to(&response, addr).await?;
                 }
             }
         } else {

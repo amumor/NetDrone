@@ -14,28 +14,15 @@ pub struct Vec3<T> {
 pub enum Command {
     #[serde(rename = "move")]
     Move(Vec3<i32>),
+
+    #[serde(rename = "pos")]
+    Pos(Vec<i32>),
 }
 
-/// Message sent from client to server.
+/// Message sent between client/drone and server.
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
-pub enum ClientMessage {
+pub enum Message {
     #[serde(rename = "command")]
-    Command {
-        drone_id: i32,
-        command: Command,
-    },
-}
-
-/// Message sent from server to client.
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(tag = "type")]
-pub enum ServerMessage {
-    #[serde(rename = "state")]
-    State {
-        drone_id: i32,
-        x: f32,
-        y: f32,
-        z: f32,
-    },
+    Command { drone_id: i32, command: Command },
 }
