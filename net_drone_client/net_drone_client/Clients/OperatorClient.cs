@@ -1,4 +1,3 @@
-using net_drone_client.Communication;
 using net_drone_client.Models;
 
 namespace net_drone_client.Clients;
@@ -9,16 +8,19 @@ public class OperatorClient : AbstractNetDroneClient
     {
         Ip = ip;
         Port = port;
+        DroneState = new DroneState();
         SetupUdpConnection();
     }
     
     public void SendCommandToDrone(Command command)
     {
+        Console.WriteLine($"Sending command to drone: {command}");
         _networkClient.SendCommand(command);
     }
 
     public Vec3<float> GetLatestLocationFromDrone()
     {
+        Console.WriteLine($"Getting latest location from drone");
         return DroneState.Position;
     }
     
@@ -26,12 +28,13 @@ public class OperatorClient : AbstractNetDroneClient
     {
         _networkClient.OnMessageReceived += message =>
         {
+            Console.WriteLine($"Received message: {message}");
+            var data = message.Command.Data;
             DroneState.Position = new Vec3<float>(
-                message.X,
-                message.Y,
-                message.Z
+                data.X,
+                data.Y,
+                data.Z
             );
-            Console.WriteLine($"Handling message for DroneClient: {message.Type}");
         };
     }
 }

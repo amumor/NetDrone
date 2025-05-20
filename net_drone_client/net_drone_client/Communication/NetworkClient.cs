@@ -17,33 +17,17 @@ public class NetworkClient
         Task.Run(ListenForMessages);
         Console.WriteLine($"UDP client initialized and connected to {ip}:{port}");
     }
-
-    public void SendLocation(Command location)
-    {
-        var clientMessage = new ClientMessage {
-            Type = "state",
-            DroneId = "drone_1",
-            Command = new Command(
-                CommandType.Move,
-                new Vec3<int>(location.Data.X, location.Data.Y, location.Data.Z)
-            ) 
-        };
-
-        var messageBytes = JsonSerializer.SerializeToUtf8Bytes(clientMessage);
-        _udpClient.Send(messageBytes, messageBytes.Length);
-        Console.WriteLine("Location data sent to server.");
-    }
-
+    
     public void SendCommand(Command command)
     {
-        var clientMessage = new ClientMessage
+        var outgoingMessage = new ServerMessage
         {
-            Type = "command",
+            //TODO: Server must assign the drone id as it is not known to the client
             DroneId = "drone_1",
             Command = command
         };
 
-        var messageBytes = JsonSerializer.SerializeToUtf8Bytes(clientMessage);
+        var messageBytes = JsonSerializer.SerializeToUtf8Bytes(outgoingMessage);
         _udpClient.Send(messageBytes, messageBytes.Length);
         Console.WriteLine("Command sent to server.");
     }
@@ -55,11 +39,11 @@ public class NetworkClient
             try
             {
                 var receivedBytes = await _udpClient.ReceiveAsync();
-                var serverMessage = JsonSerializer.Deserialize<ServerMessage>(receivedBytes.Buffer);
+                var incomingMessage = JsonSerializer.Deserialize<ServerMessage>(receivedBytes.Buffer);
 
-                if (serverMessage != null)
+                if (incomingMessage != null)
                 {
-                    OnMessageReceived?.Invoke(serverMessage);
+                    OnMessageReceived?.Invoke(incomingMessage);
                 }
             }
             catch (Exception ex)

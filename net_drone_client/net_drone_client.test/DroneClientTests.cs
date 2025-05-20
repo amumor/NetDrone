@@ -29,7 +29,7 @@ public class DroneClientTests
         _droneClient.SendLocationToOperator(command);
 
         // Assert
-        _mockNetworkClient.Verify(nc => nc.SendLocation(command), Times.Once);
+        _mockNetworkClient.Verify(nc => nc.SendCommand(command), Times.Once);
     }
 /*
     [Test]

@@ -46,7 +46,7 @@ public class Command
     }
 }
 
-// Message sent from client to server
+/* Message sent from client to server
 public class ClientMessage
 {
     [JsonPropertyName("type")]
@@ -58,22 +58,14 @@ public class ClientMessage
     [JsonPropertyName("command")]
     public Command Command { get; set; }
 }
-
+*/
+ 
 // Message sent from server to client
 public class ServerMessage
 {
-    [JsonPropertyName("type")]
-    public string Type { get; set; } // "state"
-
     [JsonPropertyName("drone_id")]
     public string DroneId { get; set; }
 
-    [JsonPropertyName("x")]
-    public float X { get; set; }
-
-    [JsonPropertyName("y")]
-    public float Y { get; set; }
-
-    [JsonPropertyName("z")]
-    public float Z { get; set; }
+    [JsonPropertyName("command")]
+    public Command Command { get; set; }
 }
