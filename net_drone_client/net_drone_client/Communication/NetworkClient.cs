@@ -13,28 +13,31 @@ public class NetworkClient
 
     public NetworkClient(int clientPort, int serverPort, string serverIp)
     {
+        // Exposes the UDP client to the outside world
         _udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, clientPort));
+        Console.WriteLine($"UDP client initialized on port {clientPort}");
+        
+        // Connects to the server
         _udpClient.Connect(
             new IPEndPoint(IPAddress.Parse(serverIp), serverPort)
         );
+        Console.WriteLine($"UDP client connected to server at {serverIp}:{serverPort}\n");
+        
         _isRunning = true;
         Task.Run(ListenForMessages);
-        
-        Console.WriteLine($"UDP client initialized on {clientPort} and connected to server at {serverIp}:{serverPort}");
     }
     
     public void SendCommand(Command command, int droneId)
     {
         var outgoingMessage = new ServerMessage
         {
-            //TODO: Server must assign the drone id as it is not known to the client
             DroneId = droneId,
             Command = command
         };
 
         var messageBytes = JsonSerializer.SerializeToUtf8Bytes(outgoingMessage);
         _udpClient.Send(messageBytes, messageBytes.Length);
-        Console.WriteLine("Command sent to server.");
+        Console.WriteLine($"Command [{command.Cmd}] was sent to droneId {droneId} from {Program.CLIENT_TYPE}");
     }
 
     private async Task ListenForMessages()
@@ -62,6 +65,6 @@ public class NetworkClient
     {
         _udpClient.Close();
         _isRunning = false;
-        Console.WriteLine("UDP client closed.");
+        Console.WriteLine("\nUDP connection closed.");
     }
 }

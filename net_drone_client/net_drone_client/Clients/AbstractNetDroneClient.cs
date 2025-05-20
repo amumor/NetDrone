@@ -15,7 +15,18 @@ public abstract class AbstractNetDroneClient
     protected void SetupUdpConnection()
     {
         _networkClient = new NetworkClient(ClientPort, ServerPort, ServerIp);
+        RegisterClientToServer();
         HandleIncomingMessages();
+    }
+    
+    private void RegisterClientToServer()
+    {
+        var command = new Command(
+
+            CommandType.Register,
+            null
+        );
+        _networkClient.SendCommand(command, DroneState.Id);
     }
     
     protected abstract void HandleIncomingMessages();
@@ -23,6 +34,5 @@ public abstract class AbstractNetDroneClient
     public void Disconnect()
     {
         _networkClient.Close();
-        Console.WriteLine("Disconnected from UDP");
     }
 }

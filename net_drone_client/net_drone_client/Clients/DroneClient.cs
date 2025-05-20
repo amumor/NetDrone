@@ -17,22 +17,25 @@ public class DroneClient : AbstractNetDroneClient
 
     public void SendLocationToOperator(Command command)
     {
-        Console.WriteLine($"[{ServerIp}:{ServerPort}] {command}");
         _networkClient.SendCommand(command, DroneState.Id);
     }
     
     public List<Vec3<float>> GetPendingMovements()
     {
-        Console.WriteLine("Getting pending movements...");
         // Needs to be interpolated
-        return _movementQueue.GetPendingMovements();
+        var pendingMovements = _movementQueue.GetPendingMovements();
+        Console.WriteLine($"{pendingMovements.Count} pending movements found for drone {DroneState.Id}:");
+        foreach (var movement in pendingMovements)
+        {
+            Console.WriteLine(movement);
+        }
+        return pendingMovements;
     }
     
     protected override void HandleIncomingMessages()
     {
         _networkClient.OnMessageReceived += message =>
         {
-            Console.WriteLine($"Handling message for DroneClient: {message.Command.Cmd}");
             var data = message.Command.Data;
             _movementQueue.AddMovement(
                 new Vec3<float>(
