@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using net_drone_client.Models;
@@ -10,20 +11,24 @@ public class NetworkClient
     private bool _isRunning;
     public event Action<ServerMessage> OnMessageReceived = delegate { };
 
-    public NetworkClient(string ip, int port)
+    public NetworkClient(int clientPort, int serverPort, string serverIp)
     {
-        _udpClient.Connect(ip, port);
+        _udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, clientPort));
+        _udpClient.Connect(
+            new IPEndPoint(IPAddress.Parse(serverIp), serverPort)
+        );
         _isRunning = true;
         Task.Run(ListenForMessages);
-        Console.WriteLine($"UDP client initialized and connected to {ip}:{port}");
+        
+        Console.WriteLine($"UDP client initialized on {clientPort} and connected to server at {serverIp}:{serverPort}");
     }
     
-    public void SendCommand(Command command)
+    public void SendCommand(Command command, int droneId)
     {
         var outgoingMessage = new ServerMessage
         {
             //TODO: Server must assign the drone id as it is not known to the client
-            DroneId = "drone_1",
+            DroneId = droneId,
             Command = command
         };
 

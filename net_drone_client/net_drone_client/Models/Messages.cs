@@ -6,13 +6,13 @@ using System.Runtime.Serialization;
 public class Vec3<T>
 {
     [JsonPropertyName("x")]
-    public T X { get; set; }
+    public T X { get; }
 
     [JsonPropertyName("y")]
-    public T Y { get; set; }
+    public T Y { get; }
 
     [JsonPropertyName("z")]
-    public T Z { get; set; }
+    public T Z { get; }
 
     public Vec3(T x, T y, T z)
     {
@@ -27,8 +27,8 @@ public enum CommandType
 {
     [EnumMember(Value = "move")]
     Move,
-    [EnumMember(Value = "location")]
-    Location
+    [EnumMember(Value = "pos")]
+    Position,
 }
 
 public class Command
@@ -64,7 +64,7 @@ public class ClientMessage
 public class ServerMessage
 {
     [JsonPropertyName("drone_id")]
-    public string DroneId { get; set; }
+    public int DroneId { get; set; }
 
     [JsonPropertyName("command")]
     public Command Command { get; set; }
