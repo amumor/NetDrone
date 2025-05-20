@@ -7,7 +7,7 @@ public abstract class AbstractNetDroneClient
 {
     protected string Ip { get; set; }
     protected int Port { get; set; }
-    protected DroneState DroneState { get; } = new();
+    protected DroneState DroneState { get; set; }
     
     protected NetworkClient _networkClient;
     
@@ -15,7 +15,6 @@ public abstract class AbstractNetDroneClient
     {
         _networkClient = new NetworkClient(Ip, Port);
         HandleIncomingMessages();
-        Console.WriteLine($"Connected to UDP at {Ip}:{Port}");
     }
     
     protected abstract void HandleIncomingMessages();
@@ -23,6 +22,6 @@ public abstract class AbstractNetDroneClient
     public void Disconnect()
     {
         _networkClient.Close();
-        Console.WriteLine("Disconneced from UDP");
+        Console.WriteLine("Disconnected from UDP");
     }
 }
