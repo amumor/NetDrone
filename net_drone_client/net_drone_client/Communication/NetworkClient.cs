@@ -1,38 +1,40 @@
-using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using net_drone_client.Models;
 
 namespace net_drone_client.Communication;
 
-public static class NetworkClient
+public class NetworkClient
 {
-    private static UdpClient _udpClient;
+    private readonly UdpClient _udpClient = new();
+    private bool _isRunning;
+    public event Action<ServerMessage> OnMessageReceived = delegate { };
 
-    public static void Initialize(string ip, int port)
+    public NetworkClient(string ip, int port)
     {
-        _udpClient = new UdpClient();
         _udpClient.Connect(ip, port);
+        _isRunning = true;
+        Task.Run(ListenForMessages);
         Console.WriteLine($"UDP client initialized and connected to {ip}:{port}");
     }
 
-    public static void SendLocation(Command location)
+    public void SendLocation(Command location)
     {
-        var serverMessage = new ServerMessage
-        {
+        var clientMessage = new ClientMessage {
             Type = "state",
             DroneId = "drone_1",
-            X = location.Data.X,
-            Y = location.Data.Y,
-            Z = location.Data.Z
+            Command = new Command(
+                CommandType.Move,
+                new Vec3<int>(location.Data.X, location.Data.Y, location.Data.Z)
+            ) 
         };
 
-        var messageBytes = JsonSerializer.SerializeToUtf8Bytes(serverMessage);
+        var messageBytes = JsonSerializer.SerializeToUtf8Bytes(clientMessage);
         _udpClient.Send(messageBytes, messageBytes.Length);
         Console.WriteLine("Location data sent to server.");
     }
 
-    public static void SendCommand(Command command)
+    public void SendCommand(Command command)
     {
         var clientMessage = new ClientMessage
         {
@@ -46,25 +48,31 @@ public static class NetworkClient
         Console.WriteLine("Command sent to server.");
     }
 
-    public static ServerMessage ReceiveMessage(int port)
+    private async Task ListenForMessages()
     {
-        var remoteEndPoint = new IPEndPoint(IPAddress.Any, port);
-        var receivedBytes = _udpClient.Receive(ref remoteEndPoint);
-        var serverMessage = JsonSerializer.Deserialize<ServerMessage>(receivedBytes);
-
-        return serverMessage ?? new ServerMessage
+        while (_isRunning)
         {
-            Type = "unknown",
-            DroneId = "unknown",
-            X = 0,
-            Y = 0,
-            Z = 0
-        };
+            try
+            {
+                var receivedBytes = await _udpClient.ReceiveAsync();
+                var serverMessage = JsonSerializer.Deserialize<ServerMessage>(receivedBytes.Buffer);
+
+                if (serverMessage != null)
+                {
+                    OnMessageReceived?.Invoke(serverMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error receiving message: {ex.Message}");
+            }
+        }
     }
 
-    public static void Close()
+    public void Close()
     {
         _udpClient.Close();
+        _isRunning = false;
         Console.WriteLine("UDP client closed.");
     }
 }

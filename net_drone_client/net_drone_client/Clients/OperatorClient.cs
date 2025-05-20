@@ -9,11 +9,12 @@ public class OperatorClient : AbstractNetDroneClient
     {
         Ip = ip;
         Port = port;
+        SetupUdpConnection();
     }
     
     public void SendCommandToDrone(Command command)
     {
-        NetworkClient.SendCommand(command);
+        _networkClient.SendCommand(command);
     }
 
     public Vec3<float> GetLatestLocationFromDrone()
@@ -23,12 +24,14 @@ public class OperatorClient : AbstractNetDroneClient
     
     protected override void HandleIncomingMessages()
     {
-        var message = NetworkClient.ReceiveMessage(Port);
-        DroneState.Position = new Vec3<float>(
-            message.X,
-            message.Y,
-            message.Z
-        );
-        Console.WriteLine($"Handling message for DroneClient: {message.Type}");
+        _networkClient.OnMessageReceived += message =>
+        {
+            DroneState.Position = new Vec3<float>(
+                message.X,
+                message.Y,
+                message.Z
+            );
+            Console.WriteLine($"Handling message for DroneClient: {message.Type}");
+        };
     }
 }

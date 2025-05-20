@@ -4,8 +4,6 @@ using net_drone_client.Models;
 // DroneClient
 var droneClient = new DroneClient("192.88.12.244", 8888);
 
-droneClient.Initialize();
-
 var command = new Command(
     CommandType.Move,
     new Vec3<int>(10, 100, 0)
@@ -19,8 +17,6 @@ droneClient.Disconnect();
 
 // OperatorClient
 var operatorClient = new OperatorClient("192.88.12.244", 8888);
-
-operatorClient.Initialize();
 
 operatorClient.SendCommandToDrone(command);
 operatorClient.GetLatestLocationFromDrone();

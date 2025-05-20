@@ -5,17 +5,20 @@ namespace net_drone_client.Clients;
 
 public class DroneClient : AbstractNetDroneClient
 {
+
+    
     private readonly MovementQueue _movementQueue = new();
 
     public DroneClient(string ip, int port)
     {
         Ip = ip;
         Port = port;
+        SetupUdpConnection();
     }
 
     public void SendLocationToOperator(Command command)
     {
-        NetworkClient.SendLocation(command);
+        _networkClient.SendLocation(command);
     }
     
     public List<Vec3<float>> GetPendingMovements()
@@ -26,10 +29,12 @@ public class DroneClient : AbstractNetDroneClient
     
     protected override void HandleIncomingMessages()
     {
-        var message = NetworkClient.ReceiveMessage(Port);
-        _movementQueue.AddMovement(
-            new Vec3<float>(message.X, message.Y, message.Z)
-        );
-        Console.WriteLine($"Handling message for DroneClient: {message.Type}");
+        _networkClient.OnMessageReceived += message =>
+        {
+            _movementQueue.AddMovement(
+                new Vec3<float>(message.X, message.Y, message.Z)
+            );
+            Console.WriteLine($"Handling message for DroneClient: {message.Type}");
+        };
     }
 }
