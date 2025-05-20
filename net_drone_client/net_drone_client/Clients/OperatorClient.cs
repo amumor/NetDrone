@@ -4,18 +4,19 @@ namespace net_drone_client.Clients;
 
 public class OperatorClient : AbstractNetDroneClient
 {
-    public OperatorClient(string ip, int port)
+    public OperatorClient(int clientPort, int serverPort, string serverIp, int droneId)
     {
-        Ip = ip;
-        Port = port;
-        DroneState = new DroneState();
+        ClientPort = clientPort;
+        ServerPort = serverPort;
+        ServerIp = serverIp;
+        DroneState = new DroneState { Id = droneId };
         SetupUdpConnection();
     }
     
     public void SendCommandToDrone(Command command)
     {
         Console.WriteLine($"Sending command to drone: {command}");
-        _networkClient.SendCommand(command);
+        _networkClient.SendCommand(command, DroneState.Id);
     }
 
     public Vec3<float> GetLatestLocationFromDrone()

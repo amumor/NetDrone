@@ -5,15 +5,16 @@ namespace net_drone_client.Clients;
 
 public abstract class AbstractNetDroneClient
 {
-    protected string Ip { get; set; }
-    protected int Port { get; set; }
+    protected int ClientPort { get; set; }
+    protected int ServerPort { get; set; }
+    protected string ServerIp { get; set; }
     protected DroneState DroneState { get; set; }
     
     protected NetworkClient _networkClient;
     
     protected void SetupUdpConnection()
     {
-        _networkClient = new NetworkClient(Ip, Port);
+        _networkClient = new NetworkClient(ClientPort, ServerPort, ServerIp);
         HandleIncomingMessages();
     }
     

@@ -6,17 +6,19 @@ public class DroneClient : AbstractNetDroneClient
 {
     private readonly MovementQueue _movementQueue = new();
 
-    public DroneClient(string ip, int port)
+    public DroneClient(int clientPort, int serverPort, string serverIp, int droneId)
     {
-        Ip = ip;
-        Port = port;
+        ClientPort = clientPort;
+        ServerPort = serverPort;
+        ServerIp = serverIp;
+        DroneState = new DroneState { Id = droneId };
         SetupUdpConnection();
     }
 
     public void SendLocationToOperator(Command command)
     {
-        Console.WriteLine($"[{Ip}:{Port}] {command}");
-        _networkClient.SendCommand(command);
+        Console.WriteLine($"[{ServerIp}:{ServerPort}] {command}");
+        _networkClient.SendCommand(command, DroneState.Id);
     }
     
     public List<Vec3<float>> GetPendingMovements()
