@@ -5,6 +5,8 @@ namespace net_drone_client;
 
 class Program
 {
+    public static ClientType CLIENT_TYPE;
+    
     static void Main(string[] args)
     {
         var cancellationTokenSource = new CancellationTokenSource();
@@ -18,6 +20,7 @@ class Program
 
         if (args.Contains("--operator"))
         {
+            CLIENT_TYPE = ClientType.Operator;
             var operatorIdArg = args.FirstOrDefault(arg => arg.StartsWith("--id="));
             if (operatorIdArg == null)
             {
@@ -34,6 +37,7 @@ class Program
         }
         else if (args.Contains("--drone"))
         {
+            CLIENT_TYPE = ClientType.Drone;
             var droneIdArg = args.FirstOrDefault(arg => arg.StartsWith("--id="));
             if (droneIdArg == null)
             {

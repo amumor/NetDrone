@@ -20,15 +20,20 @@ public class Vec3<T>
         Y = y;
         Z = z;
     }
+
+    public override string ToString()
+    {
+        return $"({X}, {Y}, {Z})";
+    }
 }
 
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum CommandType
 {
-    [EnumMember(Value = "move")]
     Move,
-    [EnumMember(Value = "pos")]
-    Position,
+    State,
+    Emergency,
+    Register,
+    Heartbeat
 }
 
 public class Command

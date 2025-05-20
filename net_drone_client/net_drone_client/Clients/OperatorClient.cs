@@ -15,21 +15,21 @@ public class OperatorClient : AbstractNetDroneClient
     
     public void SendCommandToDrone(Command command)
     {
-        Console.WriteLine($"Sending command to drone: {command}");
         _networkClient.SendCommand(command, DroneState.Id);
     }
 
     public Vec3<float> GetLatestLocationFromDrone()
     {
-        Console.WriteLine($"Getting latest location from drone");
-        return DroneState.Position;
+        var position = DroneState.Position;
+        Console.WriteLine($"Fetching latest location from drone: {position}");
+        return position;
     }
     
     protected override void HandleIncomingMessages()
     {
         _networkClient.OnMessageReceived += message =>
         {
-            Console.WriteLine($"Received message: {message}");
+            Console.WriteLine($"Received location update from drone {message.DroneId}");
             var data = message.Command.Data;
             DroneState.Position = new Vec3<float>(
                 data.X,
