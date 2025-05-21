@@ -9,6 +9,7 @@ internal class Program
 
         var server = new NetDroneServer();
         var cts = new CancellationTokenSource();
+        System.Console.WriteLine($"🚀 Starting NetDrone server...");
         await server.StartListenersAsync(dronePort, clientPort, cts.Token);
     }
 }
