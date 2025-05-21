@@ -18,10 +18,10 @@ public class NetDroneServer
     public async Task StartListenersAsync(int droneListenPort, int operatorListenPort, CancellationToken token)
     {
         var droneTask = DroneListenerLoopAsync(droneListenPort, token);
-        System.Console.WriteLine($"...Listening for Drone messages on Port: {_droneEndpoints}");
+        System.Console.WriteLine($"...Listening for Drone messages on Port: {droneListenPort}");
 
         var operatorTask = OperatorListenerLoopAsync(operatorListenPort, token);
-        System.Console.WriteLine($"...Listening for Operator messages on Port: {_operatorEndpoints}");
+        System.Console.WriteLine($"...Listening for Operator messages on Port: {operatorListenPort}");
 
         await Task.WhenAll(droneTask, operatorTask);
     }
