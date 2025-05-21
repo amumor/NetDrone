@@ -50,7 +50,7 @@ public class NetDroneServer
                 {
                     case CommandType.Register:
                         Console.WriteLine("Register command received.");
-                        await SendAckAsync(result.RemoteEndPoint, );
+                        await SendAckAsync(result.RemoteEndPoint, message.DroneId, token);
                         break;
                     case CommandType.Move:
                         Console.WriteLine("Move command received.");
@@ -131,17 +131,16 @@ public class NetDroneServer
         }
     }
 
-    private async Task SendAckAsync(IPEndPoint recipient, string ackType, int droneId, CancellationToken token)
+    private async Task SendAckAsync(IPEndPoint recipient, int droneId, CancellationToken token)
     {
         var ackMessage = new Message
         {
             DroneId = droneId,
             Command = new Command
             {
-                Cmd = CommandType.Register, // Or a specific Ack command type if you have one
+                Cmd = CommandType.Register,
                 Data = null
             },
-            // Optionally add an "AckType" property to Message if you want to distinguish ACKs
         };
 
         var json = JsonSerializer.Serialize(ackMessage);
@@ -149,6 +148,6 @@ public class NetDroneServer
 
         using var sender = new UdpClient();
         await sender.SendAsync(bytes, bytes.Length, recipient);
-        Console.WriteLine($"Sent ACK ({ackType}) to {recipient} for drone {droneId}");
+        Console.WriteLine($"Sent ACK {recipient} for drone {droneId}");
     }
 }
