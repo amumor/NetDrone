@@ -46,9 +46,19 @@ public class NetDroneServer
             if (message != null)
             {
                 _droneEndpoints[message.DroneId] = result.RemoteEndPoint;
-                if (!message.Command.Cmd.Equals(CommandType.Register))
+                switch (message.Command.Cmd)
                 {
-                    await ForwardToOperatorAsync(message, token);
+                    case CommandType.Register:
+                        Console.WriteLine("Register command received.");
+                        await SendAckAsync(result.RemoteEndPoint, );
+                        break;
+                    case CommandType.Move:
+                        Console.WriteLine("Move command received.");
+                        await ForwardToDroneAsync(message, token);
+                        break;
+                    default:
+                        Console.WriteLine("Unknown command received.");
+                        break;
                 }
             }
         }
@@ -82,15 +92,18 @@ public class NetDroneServer
         }
     }
 
+
     private async Task ForwardToDroneAsync(Message message, CancellationToken token)
     {
-        Console.WriteLine($"Drone id: {message.DroneId}");
+        Console.WriteLine($"...Drone id: {message.DroneId}");
         if (_droneEndpoints.TryGetValue(message.DroneId, out var droneEP))
         {
-            Console.WriteLine($"Drone EP: {droneEP}");
+            Console.WriteLine($"...Drone EP: {droneEP}");
             using var sender = new UdpClient();
             var json = JsonSerializer.Serialize(message);
             var bytes = Encoding.UTF8.GetBytes(json);
+            System.Console.WriteLine($"...Message: {json}");
+
             await sender.SendAsync(bytes, bytes.Length, droneEP);
             Console.WriteLine($"Forwarded to drone {message.DroneId} at {droneEP}");
         }
@@ -102,10 +115,10 @@ public class NetDroneServer
 
     private async Task ForwardToOperatorAsync(Message message, CancellationToken token)
     {
-        Console.WriteLine($"Drone id: {message.DroneId}");
+        Console.WriteLine($"...Drone id: {message.DroneId}");
         if (_operatorEndpoints.TryGetValue(message.DroneId, out var operatorEP))
         {
-            Console.WriteLine($"Drone EP: {operatorEP}");
+            Console.WriteLine($"...Drone EP: {operatorEP}");
             using var sender = new UdpClient();
             var json = JsonSerializer.Serialize(message);
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -116,5 +129,26 @@ public class NetDroneServer
         {
             Console.WriteLine($"No endpoint for operator of drone {message.DroneId}");
         }
+    }
+
+    private async Task SendAckAsync(IPEndPoint recipient, string ackType, int droneId, CancellationToken token)
+    {
+        var ackMessage = new Message
+        {
+            DroneId = droneId,
+            Command = new Command
+            {
+                Cmd = CommandType.Register, // Or a specific Ack command type if you have one
+                Data = null
+            },
+            // Optionally add an "AckType" property to Message if you want to distinguish ACKs
+        };
+
+        var json = JsonSerializer.Serialize(ackMessage);
+        var bytes = Encoding.UTF8.GetBytes(json);
+
+        using var sender = new UdpClient();
+        await sender.SendAsync(bytes, bytes.Length, recipient);
+        Console.WriteLine($"Sent ACK ({ackType}) to {recipient} for drone {droneId}");
     }
 }
