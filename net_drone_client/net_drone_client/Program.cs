@@ -61,8 +61,8 @@ class Program
     {
         Console.WriteLine($"Running operator mode on drone: {droneId}");
         var operatorClient = new OperatorClient(
-            8081, 
-            8080, 
+            4102, 
+            4002, 
             "127.0.0.1", 
             droneId
         );
@@ -83,8 +83,8 @@ class Program
     {
         Console.WriteLine($"Running drone mode with ID: {droneId}");
         var droneClient = new DroneClient(
-            8082,
-            8080,
+            4101,
+            4001,
             "127.0.0.1",
             droneId
         );
