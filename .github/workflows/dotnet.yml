@@ -1,0 +1,39 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies for net_drone_client
+        run: dotnet restore src/net_drone_client/net_drone_client/net_drone_client.csproj
+
+      - name: Build net_drone_client
+        run: dotnet build src/net_drone_client/net_drone_client/net_drone_client.csproj --no-restore
+
+      - name: Test net_drone_client
+        run: dotnet test src/net_drone_client/net_drone_client/net_drone_client.csproj --no-build --verbosity normal
+
+      - name: Restore dependencies for NetDroneServerLib
+        run: dotnet restore src/NetDroneServerLib/NetDroneServerLib.csproj
+
+      - name: Build NetDroneServerLib
+        run: dotnet build src/NetDroneServerLib/NetDroneServerLib.csproj --no-restore
+
+      - name: Test NetDroneServerLib
+        run: dotnet test src/ProjectB/ProjectB.csprojsrc/NetDroneServerLib/NetDroneServerLib.csproj --no-build --verbosity normal

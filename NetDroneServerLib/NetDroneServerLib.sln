@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneServerLib", "NetDroneServerLib.csproj", "{DFF55EA4-A091-3016-AC1E-E62FB4EEB7B3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DFF55EA4-A091-3016-AC1E-E62FB4EEB7B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFF55EA4-A091-3016-AC1E-E62FB4EEB7B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFF55EA4-A091-3016-AC1E-E62FB4EEB7B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFF55EA4-A091-3016-AC1E-E62FB4EEB7B3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CEE15516-C075-4357-9F89-1DCC2C9B9884}
+	EndGlobalSection
+EndGlobal
