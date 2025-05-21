@@ -10,7 +10,7 @@ public abstract class AbstractNetDroneClient
     protected int ClientPort { get; set; }
     protected int ServerPort { get; set; }
     protected string ServerIp { get; set; }
-    protected DroneState DroneState { get; set; }
+    public DroneState DroneState { get; set; }
 
     protected NetworkClient _networkClient;
 

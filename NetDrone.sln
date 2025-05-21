@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneClientLib", "NetDro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneClientLib.Test", "NetDroneClient\NetDroneClientLib.Test\NetDroneClientLib.Test.csproj", "{7864707A-89BE-4295-BFB4-921EC707978C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneVisualization", "NetDroneVisualization\NetDroneVisualization.csproj", "{F118293D-6129-4191-B36D-DCA548A3DCB4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotDroneVisualization", "GodotDroneVisualization\GodotDroneVisualization.csproj", "{F118293D-6129-4191-B36D-DCA548A3DCB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

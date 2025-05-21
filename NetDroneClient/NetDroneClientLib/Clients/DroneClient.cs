@@ -15,12 +15,16 @@ public class DroneClient : AbstractNetDroneClient
         SetupUdpConnection();
     }
 
-    public void SendLocationToOperator(Command command)
+    public void SendLocationToOperator(Vec3<int> currentLocation)
     {
+        var command = new Command(
+            CommandType.State,
+            currentLocation
+        );
         _networkClient.SendCommand(command, DroneState.Id);
     }
 
-    public List<Vec3<float>> GetPendingMovements()
+    public List<Vec3<int>> GetPendingMovements()
     {
         // Needs to be interpolated
         var pendingMovements = _movementQueue.GetPendingMovements();
@@ -29,6 +33,7 @@ public class DroneClient : AbstractNetDroneClient
         {
             Console.WriteLine(movement);
         }
+        
         return pendingMovements;
     }
 
@@ -36,10 +41,10 @@ public class DroneClient : AbstractNetDroneClient
     {
         _networkClient.OnMessageReceived += message =>
         {
-            System.Console.WriteLine($"Message received: {message}");
+            Console.WriteLine($"Message received: {message}");
             var data = message.Command.Data;
             _movementQueue.AddMovement(
-                new Vec3<float>(
+                new Vec3<int>(
                     data.X,
                     data.Y,
                     data.Z

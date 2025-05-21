@@ -19,6 +19,7 @@ public class OperatorClient : AbstractNetDroneClient
 
     public void SendCommandToDrone(Command command)
     {
+        Console.WriteLine($"Sending command to drone {DroneState.Id}: {command}");
         _networkClient.SendCommand(command, DroneState.Id);
     }
 

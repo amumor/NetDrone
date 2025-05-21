@@ -1,0 +1,17 @@
+<Project Sdk="Godot.NET.Sdk/4.4.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Assets\drone.png" />
+    <Content Include="Assets\drone.png.import" />
+    <Content Include="Assets\map_2.png" />
+    <Content Include="Assets\map_2.png.import" />
+    <Content Include="runDroneProgram.sh" />
+    <Content Include="runOperatorProgram.sh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetDroneClient\NetDroneClientLib\NetDroneClientLib.csproj" />
+  </ItemGroup>
+</Project>

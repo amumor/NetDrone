@@ -62,7 +62,7 @@ public class DroneClientIntegrationTests
 
         await Task.Delay(500);
 
-        _droneClient.SendLocationToOperator(locationCommand);
+        _droneClient.SendLocationToOperator(new Vec3<int>(10, 20, 30));
 
         var timeoutTask = Task.Delay(5000);
 
