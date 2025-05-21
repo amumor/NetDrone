@@ -19,7 +19,7 @@ public class DroneClient : AbstractNetDroneClient
     {
         _networkClient.SendCommand(command, DroneState.Id);
     }
-    
+
     public List<Vec3<float>> GetPendingMovements()
     {
         // Needs to be interpolated
@@ -31,7 +31,7 @@ public class DroneClient : AbstractNetDroneClient
         }
         return pendingMovements;
     }
-    
+
     protected override void HandleIncomingMessages()
     {
         _networkClient.OnMessageReceived += message =>
@@ -39,8 +39,8 @@ public class DroneClient : AbstractNetDroneClient
             var data = message.Command.Data;
             _movementQueue.AddMovement(
                 new Vec3<float>(
-                    data.X, 
-                    data.Y, 
+                    data.X,
+                    data.Y,
                     data.Z
                 )
             );

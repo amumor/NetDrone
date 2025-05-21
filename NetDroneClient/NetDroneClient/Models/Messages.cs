@@ -43,7 +43,7 @@ public class Command
 
     [JsonPropertyName("data")]
     public Vec3<int> Data { get; set; }
-    
+
     public Command(CommandType cmd, Vec3<int> data)
     {
         Cmd = cmd;
@@ -64,7 +64,7 @@ public class ClientMessage
     public Command Command { get; set; }
 }
 */
- 
+
 // Message sent from server to client
 public class ServerMessage
 {

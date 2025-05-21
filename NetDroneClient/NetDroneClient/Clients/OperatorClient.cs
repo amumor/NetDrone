@@ -5,7 +5,7 @@ namespace net_drone_client.Clients;
 public class OperatorClient : AbstractNetDroneClient
 {
     private readonly MovementQueue _movementQueue = new();
-    
+
     public OperatorClient(int clientPort, int serverPort, string serverIp, int droneId)
     {
         ClientPort = clientPort;
@@ -14,7 +14,7 @@ public class OperatorClient : AbstractNetDroneClient
         DroneState = new DroneState { Id = droneId };
         SetupUdpConnection();
     }
-    
+
     public void SendCommandToDrone(Command command)
     {
         _networkClient.SendCommand(command, DroneState.Id);
@@ -26,13 +26,13 @@ public class OperatorClient : AbstractNetDroneClient
         Console.WriteLine($"Fetching latest location from drone: {position}");
         return position;
     }
-    
+
     public void UpdatePredictedPosition(Vec3<int> predictedPosition)
     {
         DroneState.PredictedPosition = predictedPosition;
         Console.WriteLine($"Predicted position updated to: {predictedPosition}");
     }
-    
+
     protected override void HandleIncomingMessages()
     {
         _networkClient.OnMessageReceived += message =>

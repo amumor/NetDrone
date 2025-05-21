@@ -9,7 +9,7 @@ public class MovementQueue
         _movements.Enqueue(movement);
     }
 
-    public List<Vec3<float>> GetPendingMovements() =>  
+    public List<Vec3<float>> GetPendingMovements() =>
         _movements
             .Reverse()
             .ToList();

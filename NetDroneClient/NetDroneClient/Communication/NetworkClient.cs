@@ -16,17 +16,17 @@ public class NetworkClient
         // Exposes the UDP client to the outside world
         _udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, clientPort));
         Console.WriteLine($"UDP client initialized on port {clientPort}");
-        
+
         // Connects to the server
         _udpClient.Connect(
             new IPEndPoint(IPAddress.Parse(serverIp), serverPort)
         );
         Console.WriteLine($"UDP client connected to server at {serverIp}:{serverPort}\n");
-        
+
         _isRunning = true;
         Task.Run(ListenForMessages);
     }
-    
+
     public void SendCommand(Command command, int droneId)
     {
         var outgoingMessage = new ServerMessage

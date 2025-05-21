@@ -36,67 +36,68 @@ public class OperatorClientIntegrationTests
         _operatorClient.Disconnect();
         _mockServer.Dispose();
     }
-    
+
     [Test]
     public async Task ShouldSendMovementCommandToServer()
     {
         var moveCommand = new Command(
-            CommandType.Move, 
+            CommandType.Move,
             new Vec3<int>(10, 20, 30)
         );
-        
+
         var expectedMessage = new ServerMessage
         {
             DroneId = 1,
             Command = moveCommand
         };
-        
+
         ServerMessage? receivedMessage = null;
-        
-        var serverTask = Task.Run(async () => {
+
+        var serverTask = Task.Run(async () =>
+        {
             var result = await _mockServer.ReceiveAsync();
             var jsonString = Encoding.UTF8.GetString(result.Buffer);
             receivedMessage = JsonSerializer.Deserialize<ServerMessage>(jsonString);
         });
-        
+
         _operatorClient.SendCommandToDrone(moveCommand);
-        
+
         var timeoutTask = Task.Delay(5000);
-        
+
         var completedTask = await Task.WhenAny(serverTask, timeoutTask);
-        
+
         Assert.That(completedTask, Is.EqualTo(serverTask));
         Assert.That(receivedMessage, Is.Not.Null);
         Assert.That(
-            JsonSerializer.Serialize(receivedMessage), 
+            JsonSerializer.Serialize(receivedMessage),
             Is.EqualTo(JsonSerializer.Serialize(expectedMessage))
         );
     }
-    
+
     [Test]
     public async Task ShouldReceiveLocationMessageFromServer()
     {
         for (var i = 0; i < 2; i++)
         {
             var movement = new Command(
-                CommandType.State, 
+                CommandType.State,
                 new Vec3<int>(i + 1, 10, 15)
             );
-        
+
             var serverMessage = new ServerMessage
             {
                 DroneId = 1,
                 Command = movement
             };
-        
+
             var jsonString = JsonSerializer.Serialize(serverMessage);
             var messageBytes = Encoding.UTF8.GetBytes(jsonString);
-        
+
             await _mockServer.SendAsync(messageBytes, messageBytes.Length);
         }
-        
+
         await Task.Delay(500);
-        
+
         var latestLocation = _operatorClient.GetLatestLocationFromDrone();
         Assert.That(latestLocation.X, Is.EqualTo(2));
     }
