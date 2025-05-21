@@ -7,11 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneServerImpl", "NetDr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneServerLib", "NetDroneServerLib\NetDroneServerLib.csproj", "{BD7113FB-62AD-4E81-B680-284D59500D0E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetDroneClient", "NetDroneClient", "{30D75445-F86B-023F-F9D3-9CA87DDA3A08}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetDroneClientLib", "NetDroneClientLib", "{30D75445-F86B-023F-F9D3-9CA87DDA3A08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneClient", "NetDroneClient\NetDroneClient\NetDroneClient.csproj", "{A336F0AC-9A34-4C73-BA00-6B8E1A2A6B39}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneClientLib", "NetDroneClient\NetDroneClientLib\NetDroneClientLib.csproj", "{A336F0AC-9A34-4C73-BA00-6B8E1A2A6B39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneClient.Test", "NetDroneClient\NetDroneClient.Test\NetDroneClient.Test.csproj", "{7864707A-89BE-4295-BFB4-921EC707978C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneClientLib.Test", "NetDroneClient\NetDroneClientLib.Test\NetDroneClientLib.Test.csproj", "{7864707A-89BE-4295-BFB4-921EC707978C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetDroneVisualization", "NetDroneVisualization\NetDroneVisualization.csproj", "{F118293D-6129-4191-B36D-DCA548A3DCB4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,18 @@ Global
 		{7864707A-89BE-4295-BFB4-921EC707978C}.Release|x64.Build.0 = Release|Any CPU
 		{7864707A-89BE-4295-BFB4-921EC707978C}.Release|x86.ActiveCfg = Release|Any CPU
 		{7864707A-89BE-4295-BFB4-921EC707978C}.Release|x86.Build.0 = Release|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Debug|x64.Build.0 = Debug|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Debug|x86.Build.0 = Debug|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Release|x64.ActiveCfg = Release|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Release|x64.Build.0 = Release|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Release|x86.ActiveCfg = Release|Any CPU
+		{F118293D-6129-4191-B36D-DCA548A3DCB4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
-using net_drone_client.Models;
+using NetDroneClientLib.Models;
 
-namespace net_drone_client.Clients;
+namespace NetDroneClientLib.Clients;
 
 public class DroneClient : AbstractNetDroneClient
 {

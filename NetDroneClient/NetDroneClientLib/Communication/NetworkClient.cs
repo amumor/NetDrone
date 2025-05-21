@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
-using net_drone_client.Models;
+using NetDroneClientLib.Models;
 
-namespace net_drone_client.Communication;
+namespace NetDroneClientLib.Communication;
 
 public class NetworkClient
 {
@@ -37,8 +37,8 @@ public class NetworkClient
         var messageBytes = JsonSerializer.SerializeToUtf8Bytes(outgoingMessage);
         _udpClient.Send(messageBytes, messageBytes.Length, _serverEndpoint);
         var message = command.Cmd == CommandType.Register
-            ? $"{Program.CLIENT_TYPE} with id {droneId} registered with server."
-            : $"Command [{command.Cmd}] was sent to droneId {droneId} from {Program.CLIENT_TYPE}";
+            ? $"{Client.CLIENT_TYPE} with id {droneId} registered with server."
+            : $"Command [{command.Cmd}] was sent to droneId {droneId} from {Client.CLIENT_TYPE}";
         Console.WriteLine(message);
     }
 

@@ -1,4 +1,4 @@
-namespace net_drone_client.Models;
+namespace NetDroneClientLib.Models;
 
 public class MovementQueue
 {

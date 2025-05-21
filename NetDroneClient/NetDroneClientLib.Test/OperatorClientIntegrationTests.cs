@@ -2,8 +2,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using net_drone_client.Clients;
-using net_drone_client.Models;
+using NetDroneClientLib.Clients;
+using NetDroneClientLib.Models;
 
 namespace NetDroneClient.Test;
 

@@ -1,6 +1,8 @@
-using net_drone_client.Models;
 
-namespace net_drone_client.Clients;
+
+using NetDroneClientLib.Models;
+
+namespace NetDroneClientLib.Clients;
 
 public class OperatorClient : AbstractNetDroneClient
 {

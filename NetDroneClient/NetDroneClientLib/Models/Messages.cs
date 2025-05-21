@@ -1,4 +1,4 @@
-namespace net_drone_client.Models;
+namespace NetDroneClientLib.Models;
 
 using System.Text.Json.Serialization;
 using System.Runtime.Serialization;

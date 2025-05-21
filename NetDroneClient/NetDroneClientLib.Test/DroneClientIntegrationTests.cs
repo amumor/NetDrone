@@ -1,10 +1,11 @@
-using net_drone_client.Clients;
-using net_drone_client.Models;
+
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
+using NetDroneClientLib.Clients;
+using NetDroneClientLib.Models;
 
 namespace NetDroneClient.Test;
 
