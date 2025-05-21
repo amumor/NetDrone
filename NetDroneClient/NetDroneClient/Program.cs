@@ -34,7 +34,7 @@ class Program
                 Console.WriteLine("Error: Invalid operator ID.");
                 return;
             }
-            RunOperatorMode(operatorId);
+            Task.Run(() => RunOperatorMode(operatorId)).Wait();
         }
         else if (args.Contains("--drone"))
         {
@@ -62,7 +62,7 @@ class Program
     {
         Console.WriteLine($"Running operator mode on drone: {droneId}");
         var operatorClient = new OperatorClient(
-            4102,
+            5002,
             4002,
             "127.0.0.1",
             droneId
@@ -82,11 +82,13 @@ class Program
     {
         Console.WriteLine($"Running drone mode with ID: {droneId}");
         var droneClient = new DroneClient(
-            4101,
+            6002,
             4001,
             "127.0.0.1",
             droneId
         );
+
+        droneClient.GetPendingMovements();
         /*
         var command = new Command(
             CommandType.Move,

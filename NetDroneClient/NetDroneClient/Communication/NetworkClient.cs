@@ -8,19 +8,18 @@ namespace net_drone_client.Communication;
 public class NetworkClient
 {
     private readonly UdpClient _udpClient = new();
+    private readonly IPEndPoint _serverEndpoint;
     private bool _isRunning;
     public event Action<ServerMessage> OnMessageReceived = delegate { };
 
     public NetworkClient(int clientPort, int serverPort, string serverIp)
     {
         // Exposes the UDP client to the outside world
-        _udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, clientPort));
+        _udpClient.Client.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), clientPort));
         Console.WriteLine($"UDP client is listening on port {clientPort}");
         
         // Connects to the server
-        _udpClient.Connect(
-            new IPEndPoint(IPAddress.Parse(serverIp), serverPort)
-        );
+        _serverEndpoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), serverPort);
         Console.WriteLine($"UDP client connected to server at {serverIp}:{serverPort}\n");
         
         _isRunning = true;
@@ -36,7 +35,7 @@ public class NetworkClient
         };
 
         var messageBytes = JsonSerializer.SerializeToUtf8Bytes(outgoingMessage);
-        _udpClient.Send(messageBytes, messageBytes.Length);
+        _udpClient.Send(messageBytes, messageBytes.Length, _serverEndpoint);
         var message = command.Cmd == CommandType.Register
             ? $"{Program.CLIENT_TYPE} with id {droneId} registered with server."
             : $"Command [{command.Cmd}] was sent to droneId {droneId} from {Program.CLIENT_TYPE}";
