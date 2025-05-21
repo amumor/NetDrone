@@ -44,7 +44,7 @@ public class NetDroneServer
                 droneEndpoints[message.DroneId] = result.RemoteEndPoint;
                 if (!message.Command.Cmd.Equals(CommandType.Register))
                 {
-                    await ForwardToClientAsync(message, token);
+                    await ForwardToOperatorAsync(message, token);
                 }
             }
         }
@@ -80,8 +80,10 @@ public class NetDroneServer
 
     private async Task ForwardToDroneAsync(Message message, CancellationToken token)
     {
+        Console.WriteLine($"Drone id: {message.DroneId}");
         if (droneEndpoints.TryGetValue(message.DroneId, out var droneEP))
         {
+            Console.WriteLine($"Drone EP: {droneEP}");
             using var sender = new UdpClient();
             var json = JsonSerializer.Serialize(message);
             var bytes = Encoding.UTF8.GetBytes(json);
@@ -94,10 +96,12 @@ public class NetDroneServer
         }
     }
 
-    private async Task ForwardToClientAsync(Message message, CancellationToken token)
+    private async Task ForwardToOperatorAsync(Message message, CancellationToken token)
     {
+        Console.WriteLine($"Drone id: {message.DroneId}");
         if (clientEndpoints.TryGetValue(message.DroneId, out var clientEP))
         {
+            Console.WriteLine($"Drone EP: {clientEP}");
             using var sender = new UdpClient();
             var json = JsonSerializer.Serialize(message);
             var bytes = Encoding.UTF8.GetBytes(json);

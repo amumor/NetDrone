@@ -36,6 +36,7 @@ public class DroneClient : AbstractNetDroneClient
     {
         _networkClient.OnMessageReceived += message =>
         {
+            System.Console.WriteLine($"Message received: {message}");
             var data = message.Command.Data;
             _movementQueue.AddMovement(
                 new Vec3<float>(
