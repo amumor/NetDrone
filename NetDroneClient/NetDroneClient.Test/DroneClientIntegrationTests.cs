@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 
-namespace net_drone_client.test;
+namespace NetDroneClient.Test;
 
 [TestFixture]
 public class DroneClientIntegrationTests

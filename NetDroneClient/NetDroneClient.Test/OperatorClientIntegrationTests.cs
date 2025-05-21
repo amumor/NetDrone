@@ -5,7 +5,7 @@ using System.Text.Json;
 using net_drone_client.Clients;
 using net_drone_client.Models;
 
-namespace net_drone_client.test;
+namespace NetDroneClient.Test;
 
 
 [TestFixture]

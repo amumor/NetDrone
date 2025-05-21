@@ -15,18 +15,18 @@ public class NetworkClient
     {
         // Exposes the UDP client to the outside world
         _udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, clientPort));
-        Console.WriteLine($"UDP client initialized on port {clientPort}");
-
+        Console.WriteLine($"UDP client is listening on port {clientPort}");
+        
         // Connects to the server
         _udpClient.Connect(
             new IPEndPoint(IPAddress.Parse(serverIp), serverPort)
         );
         Console.WriteLine($"UDP client connected to server at {serverIp}:{serverPort}\n");
-
+        
         _isRunning = true;
         Task.Run(ListenForMessages);
     }
-
+    
     public void SendCommand(Command command, int droneId)
     {
         var outgoingMessage = new ServerMessage
@@ -37,7 +37,10 @@ public class NetworkClient
 
         var messageBytes = JsonSerializer.SerializeToUtf8Bytes(outgoingMessage);
         _udpClient.Send(messageBytes, messageBytes.Length);
-        Console.WriteLine($"Command [{command.Cmd}] was sent to droneId {droneId} from {Program.CLIENT_TYPE}");
+        var message = command.Cmd == CommandType.Register
+            ? $"{Program.CLIENT_TYPE} with id {droneId} registered with server."
+            : $"Command [{command.Cmd}] was sent to droneId {droneId} from {Program.CLIENT_TYPE}";
+        Console.WriteLine(message);
     }
 
     private async Task ListenForMessages()
