@@ -11,11 +11,17 @@ public partial class Drone : Sprite2D
 	public ApplicationMode Mode { get; private set; }
 	private readonly DroneService _droneService = new();
 	private readonly OperatorService _operatorService = new();
-	private const float DroneDimension = 60.0f;
-	private const float ViewportWidth = 1920.0f;
-	private const float ViewportHeight = 1080.0f;
-	private const int MovementSpeed = 20;
-	private float _processTimer;
+	private const float DroneDimension = 50.0f;
+	private const float ViewportWidth = 1600.0f;
+	private const float ViewportHeight = 800.0f;
+	private const int MovementSpeed = 25;
+	
+	// Tick system
+	private readonly TickSystem _tickSystem = new();
+    
+	// Configurable tick rates
+	private float _droneTickRate = 0.6f;      // 1 second for drone mode
+	private float _operatorTickRate = 0.3f;   // 100ms for operator mode (more responsive)
 	
 	public override void _Ready()
 	{
@@ -34,25 +40,38 @@ public partial class Drone : Sprite2D
 			DroneDimension / textureSize.X, 
 			DroneDimension / textureSize.Y
 		);
+		
+		SetupTickSystem();
+	}
+	
+	private void SetupTickSystem()
+	{
+		_tickSystem.CreateTimer("drone_update", _droneTickRate);
+		_tickSystem.CreateTimer("operator_input", _operatorTickRate);
 	}
 	
 	public override void _Process(double delta)
 	{
-		_processTimer += (float)delta;
-		if (_processTimer >= 1f)
+		_tickSystem.Update((float)delta);
+		
+		switch (Mode)
 		{
-			_processTimer = 0f;
-			switch (Mode)
-			{
-				case ApplicationMode.Drone:
+			case ApplicationMode.Drone:
+				if (_tickSystem.IsReady("drone_update"))
+				{
 					RunDroneMode();
-					break;
-				case ApplicationMode.Operator:
+				}
+				break;
+                
+			case ApplicationMode.Operator:
+				if (_tickSystem.IsReady("operator_input"))
+				{
 					RunOperatorMode();
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
+				}
+				break;
+                
+			default:
+				throw new ArgumentOutOfRangeException();
 		}
 	}
 	
