@@ -8,7 +8,9 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using DroneServerCore.Models;
+using NetDroneServerLib.Models;
+using NetDroneServerLib.Repository;
+using NetDroneServerLib.Utils;
 
 public class NetDroneServer
 {
@@ -45,10 +47,24 @@ public class NetDroneServer
 
             if (message != null)
             {
-                _droneEndpoints[message.DroneId] = result.RemoteEndPoint;
-                if (!message.Command.Cmd.Equals(CommandType.Register))
+                switch (message.Command.Cmd)
                 {
-                    await ForwardToOperatorAsync(message, token);
+                    case CommandType.Register:
+                        System.Console.WriteLine("Register command from drone received");
+                        IpEndPointRepository.RegisterDrone(message.DroneId, result.RemoteEndPoint);
+                        break;
+
+                    default:
+                        System.Console.WriteLine("Forwarding message to Operator");
+                        IpEndPointRepository.RegisterDrone(message.DroneId, result.RemoteEndPoint);
+                        using (var udpClient = new UdpClient())
+                        {
+                            if (IpEndPointRepository.TryGetOperator(message.OperatorId, out var endPoint) && endPoint is not null)
+                            {
+                                await UdpSender.ForwardToOperatorAsync(message, endPoint, udpClient, token);
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -60,7 +76,7 @@ public class NetDroneServer
 
         while (!token.IsCancellationRequested)
         {
-            // The two tasks below allows the loop to respond to both incoming UPD packets or a cancellation token
+            // The two tasks below allows the loop to respond to both incoming UDP packets or a cancellation token
             var receiveTask = operatorListener.ReceiveAsync();
             var completedTask = await Task.WhenAny(receiveTask, Task.Delay(-1, token));
             if (completedTask != receiveTask) break;
@@ -73,48 +89,26 @@ public class NetDroneServer
 
             if (message != null)
             {
-                _operatorEndpoints[message.DroneId] = result.RemoteEndPoint;
-                if (!message.Command.Cmd.Equals(CommandType.Register))
+                switch (message.Command.Cmd)
                 {
-                    await ForwardToDroneAsync(message, token);
+                    case CommandType.Register:
+                        System.Console.WriteLine("Register command from operator received");
+                        IpEndPointRepository.RegisterOperator(message.OperatorId, result.RemoteEndPoint);
+                        break;
+
+                    default:
+                        System.Console.WriteLine("Forwarding message to Drone");
+                        IpEndPointRepository.RegisterOperator(message.OperatorId, result.RemoteEndPoint);
+                        using (var udpClient = new UdpClient())
+                        {
+                            if (IpEndPointRepository.TryGetDrone(message.DroneId, out var endPoint) && endPoint is not null)
+                            {
+                                await UdpSender.ForwardToDroneAsync(message, endPoint, udpClient, token);
+                            }
+                        }
+                        break;
                 }
             }
-        }
-    }
-
-    private async Task ForwardToDroneAsync(Message message, CancellationToken token)
-    {
-        Console.WriteLine($"Drone id: {message.DroneId}");
-        if (_droneEndpoints.TryGetValue(message.DroneId, out var droneEP))
-        {
-            Console.WriteLine($"Drone EP: {droneEP}");
-            using var sender = new UdpClient();
-            var json = JsonSerializer.Serialize(message);
-            var bytes = Encoding.UTF8.GetBytes(json);
-            await sender.SendAsync(bytes, bytes.Length, droneEP);
-            Console.WriteLine($"Forwarded to drone {message.DroneId} at {droneEP}");
-        }
-        else
-        {
-            Console.WriteLine($"No endpoint for drone {message.DroneId}");
-        }
-    }
-
-    private async Task ForwardToOperatorAsync(Message message, CancellationToken token)
-    {
-        Console.WriteLine($"Drone id: {message.DroneId}");
-        if (_operatorEndpoints.TryGetValue(message.DroneId, out var operatorEP))
-        {
-            Console.WriteLine($"Drone EP: {operatorEP}");
-            using var sender = new UdpClient();
-            var json = JsonSerializer.Serialize(message);
-            var bytes = Encoding.UTF8.GetBytes(json);
-            await sender.SendAsync(bytes, bytes.Length, operatorEP);
-            Console.WriteLine($"Forwarded to operator for drone {message.DroneId} at {operatorEP}");
-        }
-        else
-        {
-            Console.WriteLine($"No endpoint for operator of drone {message.DroneId}");
         }
     }
 }
