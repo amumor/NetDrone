@@ -7,6 +7,7 @@ namespace NetDroneClientLib.Clients;
 public class DroneClient : AbstractNetDroneClient
 {
     public readonly MovementQueue _movementQueue = new();
+    public int currentMovementId = 0;
 
     public DroneClient(int clientPort, int serverPort, string serverIp, int droneId, int operatorId)
     {
@@ -17,10 +18,19 @@ public class DroneClient : AbstractNetDroneClient
         SetupUdpConnection();
     }
 
-    public void SendLocationToOperator(Vec3 currentLocation)
+    public void SendLocationToOperator(int messageId, Vec3 currentLocation)
     {
-        var command = new Command();
-        _networkClient.SendCommand(command, DroneState.Id, DroneState.OperatorId);
+        var command = new Command
+        {
+            Cmd = CommandType.State,
+            Data = new Vec3
+            {
+                X = currentLocation.X,
+                Y = currentLocation.Y,
+                Z = currentLocation.Z
+            }
+        }
+        _networkClient.SendCommand(messageId, command, DroneState.Id, DroneState.OperatorId);
     }
 
     public Vec3 GetNextMovement()

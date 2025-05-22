@@ -29,7 +29,7 @@ public abstract class AbstractNetDroneClient
             Cmd = CommandType.Register,
             Data = null
         };
-        _networkClient.SendCommand(command, DroneState.Id, DroneState.OperatorId);
+        _networkClient.SendCommand(0, command, DroneState.Id, DroneState.OperatorId);
     }
 
     protected abstract void HandleIncomingMessages();

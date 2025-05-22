@@ -34,4 +34,9 @@ public class OperatorService
         };
         OperatorClient.SendCommandToDrone(command);
     }
+    
+    public Vec3 getLatestLocationFromDrone()
+    {
+        return OperatorClient.GetLatestLocationFromDrone();
+    }
 }

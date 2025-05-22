@@ -8,6 +8,7 @@ namespace NetDroneClientLib.Clients;
 public class OperatorClient : AbstractNetDroneClient
 {
     private readonly MovementQueue _movementQueue = new();
+    private int messageId = 0;
 
     public OperatorClient(int clientPort, int serverPort, string serverIp, int droneId, int operatorId)
     {
@@ -21,7 +22,8 @@ public class OperatorClient : AbstractNetDroneClient
     public void SendCommandToDrone(Command command)
     {
         Console.WriteLine($"Sending command to drone {DroneState.Id}: {command}");
-        _networkClient.SendCommand(command, DroneState.Id, DroneState.OperatorId);
+        _networkClient.SendCommand(messageId, command, DroneState.Id, DroneState.OperatorId);
+        messageId++;
     }
 
     public Vec3 GetLatestLocationFromDrone()

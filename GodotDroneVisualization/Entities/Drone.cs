@@ -15,6 +15,7 @@ public partial class Drone : Sprite2D
 	private const float ViewportWidth = 1600.0f;
 	private const float ViewportHeight = 800.0f;
 	private const int MovementSpeed = 25;
+	private int movementId;
 	
 	// Tick system
 	private readonly TickSystem _tickSystem = new();

@@ -27,10 +27,11 @@ public class NetworkClient
         Task.Run(ListenForMessages);
     }
     
-    public void SendCommand(Command command, int droneId, int operatorId)
+    public void SendCommand(int messageId, Command command, int droneId, int operatorId)
     {
         var outgoingMessage = new Message
         {
+            MessageId = messageId,
             DroneId = droneId,
             OperatorId = operatorId,
             Command = command
