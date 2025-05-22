@@ -12,6 +12,9 @@
     <Content Include="runOperatorProgram.sh" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="runNetDrone.sh" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\NetDroneClient\NetDroneClientLib\NetDroneClientLib.csproj" />
   </ItemGroup>
 </Project>
