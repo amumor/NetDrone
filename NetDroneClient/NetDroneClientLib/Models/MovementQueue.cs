@@ -9,8 +9,14 @@ public class MovementQueue
         _movements.Enqueue(movement);
     }
 
-    public List<Vec3<int>> GetPendingMovements() =>
-        _movements
-            .Reverse()
-            .ToList();
+    public List<Vec3<int>> GetPendingMovements()
+    {
+        var pendingMovements = new List<Vec3<int>>();
+        while (_movements.Count > 0)
+        {
+            pendingMovements.Add(_movements.Dequeue());
+        }
+        
+        return pendingMovements;
+    }
 }

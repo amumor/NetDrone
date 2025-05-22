@@ -28,12 +28,7 @@ public class DroneClient : AbstractNetDroneClient
     {
         // Needs to be interpolated
         var pendingMovements = _movementQueue.GetPendingMovements();
-        Console.WriteLine($"{pendingMovements.Count} pending movements found for drone {DroneState.Id}:");
-        foreach (var movement in pendingMovements)
-        {
-            Console.WriteLine(movement);
-        }
-        
+        Console.WriteLine($"{pendingMovements.Count} pending movements found for drone {DroneState.Id}");
         return pendingMovements;
     }
 

@@ -14,13 +14,14 @@ public partial class Drone : Sprite2D
 	private const float DroneDimension = 60.0f;
 	private const float ViewportWidth = 1920.0f;
 	private const float ViewportHeight = 1080.0f;
-	private const int MovementSpeed = 5;
+	private const int MovementSpeed = 20;
 	private float _processTimer;
 	
 	public override void _Ready()
 	{
 		var arguments = OS.GetCmdlineArgs();
 		SetApplicationMode(arguments);
+		GetWindow().Title = $"Mode: {Mode}";
 		
 		Position = new Vector2(
 			ViewportWidth / 2, 
