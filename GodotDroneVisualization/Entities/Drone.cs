@@ -1,6 +1,7 @@
 
 using System;
 using System.Linq;
+using NetDroneServerLib.Models;
 
 namespace GodotDroneVisualization.Entities;
 
@@ -20,7 +21,7 @@ public partial class Drone : Sprite2D
     private readonly TickSystem _tickSystem = new();
 
     // Configurable tick rates
-    private float _droneTickRate = 0.6f;      // 20ms for drone mode
+    private float _droneTickRate = 0.3f;      // 20ms for drone mode
     private float _operatorTickRate = 0.3f;   // 30ms for operator mode (more responsive)
 
     public override void _Ready()
@@ -81,7 +82,11 @@ public partial class Drone : Sprite2D
 
     private void RunOperatorMode()
     {
+        var positionFromDrone = _operatorService.OperatorClient.DroneState.Position;
+        // Update the drone position based on the drone's state
+        Position = new Vector2(positionFromDrone.X, positionFromDrone.Y);
         Vector2 newPosition;
+
         if (Input.IsActionPressed("ui_right") && Position.X < ViewportWidth - DroneDimension / 2)
         {
             newPosition = new Vector2(Position.X + MovementSpeed, Position.Y);
@@ -139,6 +144,16 @@ public partial class Drone : Sprite2D
         if (movement.X != 0 || movement.Y != 0)
         {
             Position = new Vector2(movement.X, movement.Y);
+            // Update the internal drone state as well
+            if (_droneService.DroneClient != null)
+            {
+                _droneService.DroneClient.DroneState.Position = new Vec3
+                {
+                    X = (int)Position.X,
+                    Y = (int)Position.Y,
+                    Z = 0
+                };
+            }
         }
     }
 
@@ -161,6 +176,12 @@ public partial class Drone : Sprite2D
             GD.Print("Operator mode activated");
             Mode = ApplicationMode.Operator;
             _operatorService.Setup();
+            _operatorService.OperatorClient.DroneState.Position = new Vec3
+            {
+                X = (int)Position.X,
+                Y = (int)Position.Y,
+                Z = 0
+            };
         }
         else if (args.Contains("--drone"))
         {

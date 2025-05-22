@@ -22,6 +22,13 @@ public class OperatorService
     
     public void MoveDrone(int x, int y, int z)
     {
+        OperatorClient.DroneState.Position = new Vec3
+        {
+            X = x,
+            Y = y,
+            Z = z
+        };
+        
         var command = new Command
         {
             Cmd = CommandType.Move,

@@ -7,6 +7,11 @@ public class Vec3
     [JsonPropertyName("x")] public int X { get; set; }
     [JsonPropertyName("y")] public int Y { get; set; }
     [JsonPropertyName("z")] public int Z { get; set; }
+
+    public override string ToString()
+    {
+        return $"{X},{Y},{Z}";
+    }
 }
 
 public enum CommandType

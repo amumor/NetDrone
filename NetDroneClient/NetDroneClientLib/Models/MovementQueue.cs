@@ -10,13 +10,15 @@ public class MovementQueue
 
     public void AddMovement(LocationMessage movement)
     {
-        if (!ShouldInterpolate)
+        if (!ShouldInterpolate || _movements.Count == 0)
         {
             _movements.Enqueue(movement);
         }
         else
         {
-            var interpolatedMovements = Interpolator.Interpolate(movement.Position, 6);
+            var interpolatedMovements = Interpolator
+                .Interpolate(_movements.Last().Position, movement.Position, 6);
+
             foreach (var interpolatedMovement in interpolatedMovements)
             {
                 _movements.Enqueue(new LocationMessage
@@ -28,7 +30,7 @@ public class MovementQueue
         }
     }
     
-    public LocationMessage GetNextMovement()
+    public LocationMessage? GetNextMovement()
     {
         if (_movements.Count > 0)
         {

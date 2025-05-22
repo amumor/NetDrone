@@ -1,4 +1,3 @@
-using net_drone_client.Util;
 using NetDroneClientLib.Models;
 using NetDroneServerLib.Models;
 
@@ -6,19 +5,19 @@ namespace NetDroneClientLib.Clients;
 
 public class DroneClient : AbstractNetDroneClient
 {
-    public readonly MovementQueue _movementQueue = new();
-    public int MessageId = 1;
+    public readonly MovementQueue MovementQueue = new();
+    private int _messageId = 1;
 
     public DroneClient(int clientPort, int serverPort, string serverIp, int droneId, int operatorId)
     {
         ClientPort = clientPort;
         ServerPort = serverPort;
         ServerIp = serverIp;
-        DroneState = new DroneState { Id = droneId, OperatorId = operatorId };
+        DroneState = new DroneState { Id = droneId, OperatorId = operatorId, Position = new Vec3()};
         SetupUdpConnection();
     }
 
-    public void SendLocationToOperator(int messageId, Vec3 currentLocation)
+    private void SendLocationToOperator(int messageId, Vec3 currentLocation)
     {
         var command = new Command
         {
@@ -33,30 +32,33 @@ public class DroneClient : AbstractNetDroneClient
         _networkClient.SendCommand(messageId, command, DroneState.Id, DroneState.OperatorId);
     }
 
-    public LocationMessage GetNextMovement()
+    public LocationMessage? GetNextMovement()
     {
-        var locationMessage = _movementQueue.GetNextMovement();
-        if (locationMessage.MessageId != MessageId)
+        var locationMessage = MovementQueue.GetNextMovement();
+        if (locationMessage == null)
+        {
+            return null;
+        }
+        if (locationMessage.MessageId != _messageId)
         {
             SendLocationToOperator(locationMessage.MessageId, locationMessage.Position);
-            MessageId = locationMessage.MessageId;
+            _messageId = locationMessage.MessageId;
         }
         return locationMessage;
     }
     
     public void SetMovementInterpolation(bool shouldInterpolate)
     {
-        _movementQueue.ShouldInterpolate = shouldInterpolate;
+        MovementQueue.ShouldInterpolate = shouldInterpolate;
     }
 
     protected override void HandleIncomingMessages()
     {
         _networkClient.OnMessageReceived += message =>
         {
-            Console.WriteLine($"Message received: {message}");
-            var data = message.Command.Data;
-            _movementQueue.AddMovement(
-                new LocationMessage()
+            Console.WriteLine($"Message received with id: {message.MessageId}");
+            MovementQueue.AddMovement(
+                new LocationMessage
                 {
                     MessageId = message.MessageId,
                     Position = message.Command.Data
