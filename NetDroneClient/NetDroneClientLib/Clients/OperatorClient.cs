@@ -36,6 +36,20 @@ public class OperatorClient : AbstractNetDroneClient
     
     protected override void HandleIncomingMessages()
     {
+        // HashMap<int moveId, (x, y, z)> MoveStore
+        //
+        // - -> Move sendes ut
+        //     - Lagre Move i MoveSore
+        // - <- State kommer inn
+        //     - Sjekke message.data.x y z opp mot MoveStore.get(message.moveId)
+        //         - Hvis lik
+        //             - gi faen
+        //         - Hvis ikke lik
+        //             - Oppdater operator pos
+        //         - hvis null
+        //             - oppdater operator pos
+
+
         _networkClient.OnMessageReceived += message =>
         {
             Console.WriteLine($"Received location update from drone {message.DroneId}");
