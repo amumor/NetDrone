@@ -136,11 +136,6 @@ public partial class Drone : Sprite2D
 		{
 			Position = new Vector2(movement.X, movement.Y);
 		}
-		if (locationMessage.MessageId != _droneService.DroneClient.MessageId)
-		{
-			_droneService.UpdateDronePosition(locationMessage.MessageId, locationMessage.Position);
-			_droneService.DroneClient.MessageId = locationMessage.MessageId;
-		}
 	}
 	
 	public override void _Input(InputEvent @event)

@@ -35,7 +35,13 @@ public class DroneClient : AbstractNetDroneClient
 
     public LocationMessage GetNextMovement()
     {
-        return _movementQueue.GetNextMovement();
+        var locationMessage = _movementQueue.GetNextMovement();
+        if (locationMessage.MessageId != MessageId)
+        {
+            SendLocationToOperator(locationMessage.MessageId, locationMessage.Position);
+            MessageId = locationMessage.MessageId;
+        }
+        return locationMessage;
     }
     
     public void SetMovementInterpolation(bool shouldInterpolate)

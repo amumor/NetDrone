@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using NetDroneClientLib;
 using NetDroneClientLib.Clients;
 using NetDroneClientLib.Models;
-using NetDroneServerLib.Models;
 
 namespace GodotDroneVisualization.Entities;
 
@@ -26,11 +22,6 @@ public class DroneService
     {
         var shouldInterpolate = !DroneClient._movementQueue.ShouldInterpolate;
         DroneClient.SetMovementInterpolation(shouldInterpolate);
-    }
-    
-    public void UpdateDronePosition(int currentMovementId, Vec3 position)
-    {
-        DroneClient.SendLocationToOperator(currentMovementId, position);
     }
     
     public LocationMessage GetNextMovement()
