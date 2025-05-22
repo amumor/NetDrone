@@ -5,9 +5,9 @@ name: .NET
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -18,22 +18,16 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
 
-      - name: Restore dependencies for net_drone_client
-        run: dotnet restore src/net_drone_client/net_drone_client/net_drone_client.csproj
+      - name: Restore, build, and test NetDroneClientLib.Test
+        run: |
+          dotnet restore NetDroneClient/NetDroneClientLib.Test/NetDroneClientLib.Test.csproj
+          dotnet build NetDroneClient/NetDroneClientLib.Test/NetDroneClientLib.Test.csproj --no-restore
+          dotnet test NetDroneClient/NetDroneClientLib.Test/NetDroneClientLib.Test.csproj --no-build --verbosity normal
 
-      - name: Build net_drone_client
-        run: dotnet build src/net_drone_client/net_drone_client/net_drone_client.csproj --no-restore
-
-      - name: Test net_drone_client
-        run: dotnet test src/net_drone_client/net_drone_client/net_drone_client.csproj --no-build --verbosity normal
-
-      - name: Restore dependencies for NetDroneServerLib
-        run: dotnet restore src/NetDroneServerLib/NetDroneServerLib.csproj
-
-      - name: Build NetDroneServerLib
-        run: dotnet build src/NetDroneServerLib/NetDroneServerLib.csproj --no-restore
-
-      - name: Test NetDroneServerLib
-        run: dotnet test src/ProjectB/ProjectB.csprojsrc/NetDroneServerLib/NetDroneServerLib.csproj --no-build --verbosity normal
+      - name: Restore, build, and test NetDroneServerLib.Test
+        run: |
+          dotnet restore NetDroneServerLib.Test/NetDroneServerLib.Test.csproj
+          dotnet build NetDroneServerLib.Test/NetDroneServerLib.Test.csproj --no-restore
+          dotnet test NetDroneServerLib.Test/NetDroneServerLib.Test.csproj --no-build --verbosity normal

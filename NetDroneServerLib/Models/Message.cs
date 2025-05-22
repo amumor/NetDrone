@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace NetDroneServerLib.Models;
 
+/// <summary>
+/// Represents a 3d vector, holding x, y and z coordinates.
+/// </summary>
 public class Vec3
 {
     [JsonPropertyName("x")] public int X { get; set; }
@@ -14,6 +17,9 @@ public class Vec3
     }
 }
 
+/// <summary>
+/// Enum describing the type of command being sent.
+/// </summary>
 public enum CommandType
 {
     Move,
@@ -23,12 +29,18 @@ public enum CommandType
     Heartbeat
 }
 
+/// <summary>
+/// Class holding the actual command data alongside the vector coordinates
+/// </summary>
 public class Command
 {
     [JsonPropertyName("cmd")] public CommandType Cmd { get; set; }
     [JsonPropertyName("data")] public Vec3 Data { get; set; } = new();
 }
 
+/// <summary>
+/// Class holding the a full message being sent.
+/// </summary>
 public class Message
 {
     [JsonPropertyName("message_id")] public int MessageId { get; set; }
