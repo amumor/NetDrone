@@ -21,8 +21,8 @@ public partial class Drone : Sprite2D
     private readonly TickSystem _tickSystem = new();
 
     // Configurable tick rates
-    private float _droneTickRate = 0.3f;      // 20ms for drone mode
-    private float _operatorTickRate = 0.3f;   // 30ms for operator mode (more responsive)
+    private float _droneTickRate = 0.3f;
+    private float _operatorTickRate = 0.3f;
 
     public override void _Ready()
     {
