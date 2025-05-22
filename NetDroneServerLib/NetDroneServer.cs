@@ -17,6 +17,13 @@ public class NetDroneServer
     private readonly ConcurrentDictionary<int, IPEndPoint> _droneEndpoints = new();
     private readonly ConcurrentDictionary<int, IPEndPoint> _operatorEndpoints = new();
 
+    /// <summary>
+    /// Starts the NetDrone server.
+    /// </summary>
+    /// <param name="droneListenPort"></param>
+    /// <param name="operatorListenPort"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     public async Task StartListenersAsync(int droneListenPort, int operatorListenPort, CancellationToken token)
     {
         var droneTask = DroneListenerLoopAsync(droneListenPort, token);
@@ -28,6 +35,12 @@ public class NetDroneServer
         await Task.WhenAll(droneTask, operatorTask);
     }
 
+    /// <summary>
+    /// Listener loop for incoming messages from drones.
+    /// </summary>
+    /// <param name="port"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     private async Task DroneListenerLoopAsync(int port, CancellationToken token)
     {
         using var droneListener = new UdpClient(port);
@@ -70,6 +83,12 @@ public class NetDroneServer
         }
     }
 
+    /// <summary>
+    /// Listener loop for incoming messages from operators.
+    /// </summary>
+    /// <param name="port"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
     private async Task OperatorListenerLoopAsync(int port, CancellationToken token)
     {
         using var operatorListener = new UdpClient(port);

@@ -7,8 +7,19 @@ using NetDroneServerLib.Models;
 
 namespace NetDroneServerLib.Utils;
 
+/// <summary>
+/// Class holding static helper methods for sending messages over udp.
+/// </summary>
 public class UdpSender
 {
+    /// <summary>
+    /// Helper method tha forwards a message to the given IPEndpoint.
+    /// </summary>
+    /// <param name="message">Message</param>
+    /// <param name="operatorEP">Operator IPEndPint</param>
+    /// <param name="udpClient">UDP Client</param>
+    /// <param name="token">Cancellation token</param>
+    /// <returns></returns>
     public static async Task ForwardToOperatorAsync(Message message, IPEndPoint operatorEP, UdpClient udpClient, CancellationToken token)
     {
         try
@@ -27,6 +38,14 @@ public class UdpSender
         }
     }
 
+    /// <summary>
+    /// Helper method that forwards a message to the given Drone IPEndpoint
+    /// </summary>
+    /// <param name="message">Message</param>
+    /// <param name="droneEP">Drone IPEndPoint</param>
+    /// <param name="udpClient">UDP Client</param>
+    /// <param name="token">Cancellation token</param>
+    /// <returns></returns>
     public static async Task ForwardToDroneAsync(Message message, IPEndPoint droneEP, UdpClient udpClient, CancellationToken token)
     {
         try
