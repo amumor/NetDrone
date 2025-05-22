@@ -28,14 +28,12 @@ public class DroneService
         DroneClient.SetMovementInterpolation(shouldInterpolate);
     }
     
-    public void UpdateDronePosition()
+    public void UpdateDronePosition(int currentMovementId, Vec3 position)
     {
-        //TODO: add tick id to response
-        var currentState = DroneClient.DroneState;
-        DroneClient.SendLocationToOperator(currentState.Position);
+        DroneClient.SendLocationToOperator(currentMovementId, position);
     }
     
-    public Vec3 GetNextMovement()
+    public LocationMessage GetNextMovement()
     {
         return DroneClient.GetNextMovement();
     }

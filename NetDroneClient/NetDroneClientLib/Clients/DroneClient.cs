@@ -7,7 +7,7 @@ namespace NetDroneClientLib.Clients;
 public class DroneClient : AbstractNetDroneClient
 {
     public readonly MovementQueue _movementQueue = new();
-    public int currentMovementId = 0;
+    public int MessageId = 1;
 
     public DroneClient(int clientPort, int serverPort, string serverIp, int droneId, int operatorId)
     {
@@ -29,11 +29,11 @@ public class DroneClient : AbstractNetDroneClient
                 Y = currentLocation.Y,
                 Z = currentLocation.Z
             }
-        }
+        };
         _networkClient.SendCommand(messageId, command, DroneState.Id, DroneState.OperatorId);
     }
 
-    public Vec3 GetNextMovement()
+    public LocationMessage GetNextMovement()
     {
         return _movementQueue.GetNextMovement();
     }
@@ -50,11 +50,10 @@ public class DroneClient : AbstractNetDroneClient
             Console.WriteLine($"Message received: {message}");
             var data = message.Command.Data;
             _movementQueue.AddMovement(
-                new Vec3
+                new LocationMessage()
                 {
-                    X = data.X,
-                    Y = data.Y,
-                    Z = data.Z
+                    MessageId = message.MessageId,
+                    Position = message.Command.Data
                 }
             );
         };

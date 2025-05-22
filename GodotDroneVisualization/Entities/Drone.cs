@@ -15,7 +15,6 @@ public partial class Drone : Sprite2D
 	private const float ViewportWidth = 1600.0f;
 	private const float ViewportHeight = 800.0f;
 	private const int MovementSpeed = 25;
-	private int movementId;
 	
 	// Tick system
 	private readonly TickSystem _tickSystem = new();
@@ -126,13 +125,22 @@ public partial class Drone : Sprite2D
 
 	private void RunDroneMode()
 	{
-		var movement = _droneService.GetNextMovement();
+		var locationMessage = _droneService.GetNextMovement();
+		if (locationMessage == null)
+		{
+			return;
+		}
+		var movement = locationMessage.Position;
 		// Only update if movement is not zero
 		if (movement.X != 0 || movement.Y != 0)
 		{
 			Position = new Vector2(movement.X, movement.Y);
 		}
-		_droneService.UpdateDronePosition();
+		if (locationMessage.MessageId != _droneService.DroneClient.MessageId)
+		{
+			_droneService.UpdateDronePosition(locationMessage.MessageId, locationMessage.Position);
+			_droneService.DroneClient.MessageId = locationMessage.MessageId;
+		}
 	}
 	
 	public override void _Input(InputEvent @event)

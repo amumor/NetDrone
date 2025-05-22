@@ -6,9 +6,9 @@ namespace NetDroneClientLib.Models;
 public class MovementQueue
 {
     public bool ShouldInterpolate { get; set; } = false;
-    private readonly Queue<Vec3> _movements = new();
+    private readonly Queue<LocationMessage> _movements = new();
 
-    public void AddMovement(Vec3 movement)
+    public void AddMovement(LocationMessage movement)
     {
         if (!ShouldInterpolate)
         {
@@ -16,35 +16,25 @@ public class MovementQueue
         }
         else
         {
-            var interpolatedMovements = Interpolator.Interpolate(movement, 6);
+            var interpolatedMovements = Interpolator.Interpolate(movement.Position, 6);
             foreach (var interpolatedMovement in interpolatedMovements)
             {
-                _movements.Enqueue(interpolatedMovement);
+                _movements.Enqueue(new LocationMessage
+                {
+                    MessageId = movement.MessageId,
+                    Position = interpolatedMovement
+                });
             }
         }
     }
     
-    public Vec3 GetNextMovement()
+    public LocationMessage GetNextMovement()
     {
         if (_movements.Count > 0)
         {
             return _movements.Dequeue();
         }
 
-        return new Vec3 { X = 0, Y = 0, Z = 0 };
-    }
-
-    private List<Vec3> GetPendingMovements()
-    {
-        var pendingMovements = new List<Vec3>();
-        var i = 0;
-        while (_movements.Count > 0 && i < 10)
-        {
-            i++;
-            var movement = _movements.Dequeue();
-            pendingMovements.Add(movement);
-        }
-        
-        return pendingMovements;
+        return null;
     }
 }
