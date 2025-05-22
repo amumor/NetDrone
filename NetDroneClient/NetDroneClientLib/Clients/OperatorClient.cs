@@ -23,6 +23,11 @@ public class OperatorClient : AbstractNetDroneClient
     public void SendCommandToDrone(Command command)
     {
         Console.WriteLine($"Sending command to drone {DroneState.Id}: {command}");
+        if (command.Cmd == CommandType.Move)
+        {
+            _moveStore.Add(_messageId, command.Data);
+            Console.WriteLine($"Storing move in store with id: {_messageId}");
+        }
         _networkClient.SendCommand(_messageId, command, DroneState.Id, DroneState.OperatorId);
         _messageId++;
     }
@@ -42,8 +47,13 @@ public class OperatorClient : AbstractNetDroneClient
             Console.WriteLine($"Preforming reconciliation...");
             if (_moveStore.TryGetValue(message.MessageId, out var vector) && vector is not null)
             {
-                if (!vector.Equals(DroneState.Position))
+                Console.WriteLine($"vector in store: {vector.ToString()}");
+                Console.WriteLine($"vector in message: {message.Command.Data}");
+                if (vector.X == DroneState.Position.X
+                        && vector.Y == DroneState.Position.Y
+                        && vector.Z == DroneState.Position.Z)
                 {
+                    Console.WriteLine("Position matches id, but move has not been performed.");
                     // If drone position is not equal to drone position in store,
                     // store is updated to actual position.
                     DroneState.Position = message.Command.Data;
@@ -52,8 +62,9 @@ public class OperatorClient : AbstractNetDroneClient
             }
             else
             {
+                Console.WriteLine("Id not found in store, storing move.");
                 // If state update is not an answer to a Move command, 
-                // update position in store incase of unintended movement (wind drift, etc).
+                // update position in store in case of unintended movement (wind drift, etc).
                 DroneState.Position = message.Command.Data;
             }
         };
