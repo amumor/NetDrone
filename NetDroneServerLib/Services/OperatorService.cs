@@ -29,4 +29,10 @@ public class OperatorService
         };
         await _udpSender.SendMessageAsync(ack, sender, udpClient, token);
     }
+
+    public async Task HandleCommand(Message message, IPEndPoint sender, UdpClient udpClient, CancellationToken token)
+    {
+        _operatorEndpoints[message.DroneId] = sender;
+        await _udpSender.SendMessageAsync(message, sender, udpClient, token);
+    }
 }

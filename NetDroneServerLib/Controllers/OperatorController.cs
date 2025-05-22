@@ -11,8 +11,6 @@ namespace NetDroneServerLib.Controllers;
 public class OperatorController : IMessageController
 {
     private readonly OperatorService _operatorService;
-    private readonly UdpSender _udpSender = new UdpSender();
-
     public OperatorController(OperatorService operatorService)
     {
         _operatorService = operatorService;
@@ -31,7 +29,7 @@ public class OperatorController : IMessageController
                 break;
             case CommandType.Move:
                 System.Console.WriteLine("Move command from operator received");
-                await _udpSender.SendMessageAsync(message, sender, udpClient, token);
+                await _operatorService.HandleCommand(message, sender, udpClient, token);
                 break;
             default:
                 System.Console.WriteLine("!!! Unknown command");
