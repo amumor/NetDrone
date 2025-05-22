@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NetDroneClientLib;
 using NetDroneClientLib.Clients;
 using NetDroneClientLib.Models;
+using NetDroneServerLib.Models;
 
 namespace GodotDroneVisualization.Entities;
 
@@ -16,18 +17,26 @@ public class DroneService
             clientPort: 5001,
             serverPort: 4001,
             serverIp: "127.0.0.1",
-            droneId: 1
+            droneId: 1,
+            operatorId: 1
         );
+    }
+    
+    public void ToggleInterpolation()
+    {
+        var shouldInterpolate = !DroneClient._movementQueue.ShouldInterpolate;
+        DroneClient.SetMovementInterpolation(shouldInterpolate);
     }
     
     public void UpdateDronePosition()
     {
+        //TODO: add tick id to response
         var currentState = DroneClient.DroneState;
         DroneClient.SendLocationToOperator(currentState.Position);
     }
     
-    public List<Vec3<int>> GetPendingMovements()
+    public Vec3 GetNextMovement()
     {
-        return DroneClient.GetPendingMovements();
+        return DroneClient.GetNextMovement();
     }
 }

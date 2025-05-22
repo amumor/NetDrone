@@ -20,8 +20,8 @@ public partial class Drone : Sprite2D
 	private readonly TickSystem _tickSystem = new();
     
 	// Configurable tick rates
-	private float _droneTickRate = 0.6f;      // 1 second for drone mode
-	private float _operatorTickRate = 0.3f;   // 100ms for operator mode (more responsive)
+	private float _droneTickRate = 0.6f;      // 20ms for drone mode
+	private float _operatorTickRate = 0.3f;   // 30ms for operator mode (more responsive)
 	
 	public override void _Ready()
 	{
@@ -77,39 +77,73 @@ public partial class Drone : Sprite2D
 	
 	private void RunOperatorMode()
 	{
+		Vector2 newPosition;
 		if (Input.IsActionPressed("ui_right") && Position.X < ViewportWidth - DroneDimension / 2)
 		{
-			_operatorService.MoveDrone(MovementSpeed, 0, 0);
-			Position += new Vector2(MovementSpeed, 0);
+			newPosition = new Vector2(Position.X + MovementSpeed, Position.Y);
+			_operatorService.MoveDrone(
+				(int) newPosition.X,
+				(int) newPosition.Y,
+				0
+			);
+			Position = newPosition;
 		}
 		
 		if (Input.IsActionPressed("ui_left") && Position.X > DroneDimension / 2)
 		{
-			_operatorService.MoveDrone(-MovementSpeed, 0, 0);
-			Position -= new Vector2(MovementSpeed, 0);
+			newPosition = new Vector2(Position.X - MovementSpeed, Position.Y);
+			_operatorService.MoveDrone(
+				(int) newPosition.X,
+				(int) newPosition.Y,
+				0
+			);
+			Position = newPosition;
 		}
 		
 		if (Input.IsActionPressed("ui_up") && Position.Y > DroneDimension / 2)
 		{
-			_operatorService.MoveDrone(0, -MovementSpeed, 0);
-			Position -= new Vector2(0, MovementSpeed);
+			newPosition = new Vector2(Position.X, Position.Y - MovementSpeed);
+			_operatorService.MoveDrone(
+				(int) newPosition.X,
+				(int) newPosition.Y,
+				0
+			);
+			Position = newPosition;
 		}
 		
 		if (Input.IsActionPressed("ui_down") && Position.Y < ViewportHeight - DroneDimension / 2)
 		{
-			_operatorService.MoveDrone(0, MovementSpeed, 0);
-			Position += new Vector2(0, MovementSpeed);
+			newPosition = new Vector2(Position.X, Position.Y + MovementSpeed);
+			_operatorService.MoveDrone(
+				(int) newPosition.X,
+				(int) newPosition.Y,
+				0
+			);
+			Position = newPosition;
 		}
 	}
 
 	private void RunDroneMode()
 	{
-		var pendingMovements = _droneService.GetPendingMovements();
-		foreach (var movement in pendingMovements)
+		var movement = _droneService.GetNextMovement();
+		// Only update if movement is not zero
+		if (movement.X != 0 || movement.Y != 0)
 		{
-			Position += new Vector2(movement.X, movement.Y);
+			Position = new Vector2(movement.X, movement.Y);
 		}
 		_droneService.UpdateDronePosition();
+	}
+	
+	public override void _Input(InputEvent @event)
+	{
+		if (@event is InputEventKey keyEvent && keyEvent.Pressed && !keyEvent.Echo)
+		{
+			if (keyEvent.PhysicalKeycode == Key.I)
+			{
+				Console.WriteLine("Toggle Interpolation -----------------------------");
+				_droneService.ToggleInterpolation();
+			}
+		}
 	}
 	
 	private void SetApplicationMode(string[] args)

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using NetDroneClientLib.Models;
+using NetDroneServerLib.Models;
 
 namespace NetDroneClientLib.Communication;
 
@@ -10,7 +11,7 @@ public class NetworkClient
     private readonly UdpClient _udpClient = new();
     private readonly IPEndPoint _serverEndpoint;
     private bool _isRunning;
-    public event Action<ServerMessage> OnMessageReceived = delegate { };
+    public event Action<Message> OnMessageReceived = delegate { };
 
     public NetworkClient(int clientPort, int serverPort, string serverIp)
     {
@@ -26,20 +27,23 @@ public class NetworkClient
         Task.Run(ListenForMessages);
     }
     
-    public void SendCommand(Command command, int droneId)
+    public void SendCommand(Command command, int droneId, int operatorId)
     {
-        var outgoingMessage = new ServerMessage
+        var outgoingMessage = new Message
         {
             DroneId = droneId,
+            OperatorId = operatorId,
             Command = command
         };
 
         var messageBytes = JsonSerializer.SerializeToUtf8Bytes(outgoingMessage);
         _udpClient.Send(messageBytes, messageBytes.Length, _serverEndpoint);
+        /*
         var message = command.Cmd == CommandType.Register
             ? $"{Client.CLIENT_TYPE} with id {droneId} registered with server."
             : $"Command [{command.Cmd}] was sent to droneId {droneId} from {Client.CLIENT_TYPE}";
         Console.WriteLine(message);
+        */
     }
 
     private async Task ListenForMessages()
@@ -49,7 +53,7 @@ public class NetworkClient
             try
             {
                 var receivedBytes = await _udpClient.ReceiveAsync();
-                var incomingMessage = JsonSerializer.Deserialize<ServerMessage>(receivedBytes.Buffer);
+                var incomingMessage = JsonSerializer.Deserialize<Message>(receivedBytes.Buffer);
 
                 if (incomingMessage != null)
                 {

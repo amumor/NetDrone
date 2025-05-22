@@ -1,20 +1,48 @@
+using net_drone_client.Util;
+using NetDroneServerLib.Models;
+
 namespace NetDroneClientLib.Models;
 
 public class MovementQueue
 {
-    private readonly Queue<Vec3<int>> _movements = new();
+    public bool ShouldInterpolate { get; set; } = false;
+    private readonly Queue<Vec3> _movements = new();
 
-    public void AddMovement(Vec3<int> movement)
+    public void AddMovement(Vec3 movement)
     {
-        _movements.Enqueue(movement);
+        if (!ShouldInterpolate)
+        {
+            _movements.Enqueue(movement);
+        }
+        else
+        {
+            var interpolatedMovements = Interpolator.Interpolate(movement, 6);
+            foreach (var interpolatedMovement in interpolatedMovements)
+            {
+                _movements.Enqueue(interpolatedMovement);
+            }
+        }
+    }
+    
+    public Vec3 GetNextMovement()
+    {
+        if (_movements.Count > 0)
+        {
+            return _movements.Dequeue();
+        }
+
+        return new Vec3 { X = 0, Y = 0, Z = 0 };
     }
 
-    public List<Vec3<int>> GetPendingMovements()
+    private List<Vec3> GetPendingMovements()
     {
-        var pendingMovements = new List<Vec3<int>>();
-        while (_movements.Count > 0)
+        var pendingMovements = new List<Vec3>();
+        var i = 0;
+        while (_movements.Count > 0 && i < 10)
         {
-            pendingMovements.Add(_movements.Dequeue());
+            i++;
+            var movement = _movements.Dequeue();
+            pendingMovements.Add(movement);
         }
         
         return pendingMovements;

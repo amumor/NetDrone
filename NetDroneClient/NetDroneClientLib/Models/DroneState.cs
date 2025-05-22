@@ -1,8 +1,11 @@
+using NetDroneServerLib.Models;
+
 namespace NetDroneClientLib.Models;
 
 public class DroneState
 {
     public int Id { get; set; }
-    public Vec3<int> Position { get; set; } = new(0, 0, 0);
-    public Vec3<int> PredictedPosition { get; set; } = new(0, 0, 0);
+    public int OperatorId { get; set; }
+    public Vec3 Position { get; set; } = new(){X = 0, Y = 0, Z = 0};
+    public Vec3 PredictedPosition { get; set; } = new(){X = 0, Y = 0, Z = 0};
 }

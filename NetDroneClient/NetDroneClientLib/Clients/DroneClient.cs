@@ -1,35 +1,36 @@
+using net_drone_client.Util;
 using NetDroneClientLib.Models;
+using NetDroneServerLib.Models;
 
 namespace NetDroneClientLib.Clients;
 
 public class DroneClient : AbstractNetDroneClient
 {
-    private readonly MovementQueue _movementQueue = new();
+    public readonly MovementQueue _movementQueue = new();
 
-    public DroneClient(int clientPort, int serverPort, string serverIp, int droneId)
+    public DroneClient(int clientPort, int serverPort, string serverIp, int droneId, int operatorId)
     {
         ClientPort = clientPort;
         ServerPort = serverPort;
         ServerIp = serverIp;
-        DroneState = new DroneState { Id = droneId };
+        DroneState = new DroneState { Id = droneId, OperatorId = operatorId };
         SetupUdpConnection();
     }
 
-    public void SendLocationToOperator(Vec3<int> currentLocation)
+    public void SendLocationToOperator(Vec3 currentLocation)
     {
-        var command = new Command(
-            CommandType.State,
-            currentLocation
-        );
-        _networkClient.SendCommand(command, DroneState.Id);
+        var command = new Command();
+        _networkClient.SendCommand(command, DroneState.Id, DroneState.OperatorId);
     }
 
-    public List<Vec3<int>> GetPendingMovements()
+    public Vec3 GetNextMovement()
     {
-        // Needs to be interpolated
-        var pendingMovements = _movementQueue.GetPendingMovements();
-        Console.WriteLine($"{pendingMovements.Count} pending movements found for drone {DroneState.Id}");
-        return pendingMovements;
+        return _movementQueue.GetNextMovement();
+    }
+    
+    public void SetMovementInterpolation(bool shouldInterpolate)
+    {
+        _movementQueue.ShouldInterpolate = shouldInterpolate;
     }
 
     protected override void HandleIncomingMessages()
@@ -39,11 +40,12 @@ public class DroneClient : AbstractNetDroneClient
             Console.WriteLine($"Message received: {message}");
             var data = message.Command.Data;
             _movementQueue.AddMovement(
-                new Vec3<int>(
-                    data.X,
-                    data.Y,
-                    data.Z
-                )
+                new Vec3
+                {
+                    X = data.X,
+                    Y = data.Y,
+                    Z = data.Z
+                }
             );
         };
     }

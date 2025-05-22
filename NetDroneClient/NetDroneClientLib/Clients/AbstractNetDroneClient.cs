@@ -2,6 +2,7 @@
 
 using NetDroneClientLib.Communication;
 using NetDroneClientLib.Models;
+using NetDroneServerLib.Models;
 
 namespace NetDroneClientLib.Clients;
 
@@ -23,12 +24,12 @@ public abstract class AbstractNetDroneClient
 
     private void RegisterClientToServer()
     {
-        var command = new Command(
-
-            CommandType.Register,
-            null
-        );
-        _networkClient.SendCommand(command, DroneState.Id);
+        var command = new Command
+        {
+            Cmd = CommandType.Register,
+            Data = null
+        };
+        _networkClient.SendCommand(command, DroneState.Id, DroneState.OperatorId);
     }
 
     protected abstract void HandleIncomingMessages();
