@@ -5,7 +5,7 @@ namespace NetDroneClientLib.Clients;
 
 public class DroneClient : AbstractNetDroneClient
 {
-    public readonly MovementQueue MovementQueue = new();
+    public readonly MovementQueue<LocationMessage> MovementQueue = new DroneQueue();
     private int _messageId = 1;
 
     public DroneClient(int clientPort, int serverPort, string serverIp, int droneId, int operatorId)
@@ -39,7 +39,8 @@ public class DroneClient : AbstractNetDroneClient
         {
             return null;
         }
-        if (locationMessage.MessageId != _messageId)
+        
+        if (locationMessage.MessageId != 0)
         {
             SendLocationToOperator(locationMessage.MessageId, locationMessage.Position);
             _messageId = locationMessage.MessageId;
@@ -56,7 +57,7 @@ public class DroneClient : AbstractNetDroneClient
     {
         _networkClient.OnMessageReceived += message =>
         {
-            Console.WriteLine($"Message received with id: {message.MessageId}");
+            Console.WriteLine($"Received command from operator {message.OperatorId}");
             MovementQueue.AddMovement(
                 new LocationMessage
                 {

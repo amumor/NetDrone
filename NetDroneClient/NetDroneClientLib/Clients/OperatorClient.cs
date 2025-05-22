@@ -7,7 +7,7 @@ namespace NetDroneClientLib.Clients;
 
 public class OperatorClient : AbstractNetDroneClient
 {
-    private readonly MovementQueue _movementQueue = new();
+    public readonly MovementQueue<Vec3> MovementQueue = new OperatorQueue();
     private int _messageId = 1;
     private readonly Dictionary<int, Vec3> _moveStore = [];
 
@@ -32,11 +32,19 @@ public class OperatorClient : AbstractNetDroneClient
         _messageId++;
     }
 
-    public Vec3 GetLatestLocationFromDrone()
+    public void UpdateDronePosition(Vec3 position)
     {
-        var position = DroneState.Position;
-        Console.WriteLine($"Fetching latest location from drone: {position}");
-        return position;
+        MovementQueue.AddMovement(position);
+    }
+
+    public Vec3? GetNextMovement()
+    {
+        return MovementQueue.GetNextMovement();
+    }
+    
+    public void SetMovementInterpolation(bool shouldInterpolate)
+    {
+        MovementQueue.ShouldInterpolate = shouldInterpolate;
     }
 
     protected override void HandleIncomingMessages()
@@ -47,7 +55,9 @@ public class OperatorClient : AbstractNetDroneClient
             Console.WriteLine($"Preforming reconciliation...");
             if (_moveStore.TryGetValue(message.MessageId, out var vector) && vector is not null)
             {
-                Console.WriteLine($"vector in store: {vector.ToString()}");
+                Console.WriteLine("--------------------------------------");
+                Console.WriteLine($"id: {message.MessageId}");
+                Console.WriteLine($"vector in store: {vector}");
                 Console.WriteLine($"vector in message: {message.Command.Data}");
                 if (vector.X == DroneState.Position.X
                         && vector.Y == DroneState.Position.Y
@@ -57,6 +67,7 @@ public class OperatorClient : AbstractNetDroneClient
                     // If drone position is not equal to drone position in store,
                     // store is updated to actual position.
                     DroneState.Position = message.Command.Data;
+                    Console.WriteLine("--------------------------------------");
                 }
                 _moveStore.Remove(message.MessageId);
             }

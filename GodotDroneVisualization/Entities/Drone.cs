@@ -21,8 +21,9 @@ public partial class Drone : Sprite2D
     private readonly TickSystem _tickSystem = new();
 
     // Configurable tick rates
-    private float _droneTickRate = 0.3f;
-    private float _operatorTickRate = 0.3f;
+    private float _droneTickRate = 0.01f;
+    private float _operatorSendTickRate = 0.1f;
+    private float _operatorReceiveTickRate = 0.01f;
 
     public override void _Ready()
     {
@@ -32,7 +33,7 @@ public partial class Drone : Sprite2D
         SetApplicationMode(arguments);
         GetWindow().Title = $"Mode: {Mode}";
         var label = GetParent().GetNode<Label>("ModeLabel");
-        label.Text = $"Mode: {Mode}";
+        label.Text = $"Mode: {Mode}\nPress 'I' to toggle interpolation";
 
         Position = new Vector2(
             ViewportWidth / 2,
@@ -52,7 +53,8 @@ public partial class Drone : Sprite2D
     private void SetupTickSystem()
     {
         _tickSystem.CreateTimer("drone_update", _droneTickRate);
-        _tickSystem.CreateTimer("operator_input", _operatorTickRate);
+        _tickSystem.CreateTimer("operator_send", _operatorSendTickRate);
+        _tickSystem.CreateTimer("operator_receive", _operatorReceiveTickRate);
     }
 
     public override void _Process(double delta)
@@ -69,9 +71,13 @@ public partial class Drone : Sprite2D
                 break;
 
             case ApplicationMode.Operator:
-                if (_tickSystem.IsReady("operator_input"))
+                if (_tickSystem.IsReady("operator_send"))
                 {
-                    RunOperatorMode();
+                    RunOperatorSend();
+                }
+                if (_tickSystem.IsReady("operator_receive"))
+                {
+                    RunOperatorUpdate();
                 }
                 break;
 
@@ -80,11 +86,8 @@ public partial class Drone : Sprite2D
         }
     }
 
-    private void RunOperatorMode()
+    private void RunOperatorSend()
     {
-        var positionFromDrone = _operatorService.OperatorClient.DroneState.Position;
-        // Update the drone position based on the drone's state
-        Position = new Vector2(positionFromDrone.X, positionFromDrone.Y);
         Vector2 newPosition;
 
         if (Input.IsActionPressed("ui_right") && Position.X < ViewportWidth - DroneDimension / 2)
@@ -95,7 +98,6 @@ public partial class Drone : Sprite2D
                 (int)newPosition.Y,
                 0
             );
-            Position = newPosition;
         }
 
         if (Input.IsActionPressed("ui_left") && Position.X > DroneDimension / 2)
@@ -106,7 +108,6 @@ public partial class Drone : Sprite2D
                 (int)newPosition.Y,
                 0
             );
-            Position = newPosition;
         }
 
         if (Input.IsActionPressed("ui_up") && Position.Y > DroneDimension / 2)
@@ -117,7 +118,6 @@ public partial class Drone : Sprite2D
                 (int)newPosition.Y,
                 0
             );
-            Position = newPosition;
         }
 
         if (Input.IsActionPressed("ui_down") && Position.Y < ViewportHeight - DroneDimension / 2)
@@ -128,8 +128,17 @@ public partial class Drone : Sprite2D
                 (int)newPosition.Y,
                 0
             );
-            Position = newPosition;
         }
+    }
+
+    private void RunOperatorUpdate()
+    {
+        var nextMovement = _operatorService.GetNextMovement();
+        if (nextMovement == null)
+        {
+            return;
+        }
+        Position = new Vector2(nextMovement.X, nextMovement.Y);
     }
 
     private void RunDroneMode()
@@ -164,7 +173,15 @@ public partial class Drone : Sprite2D
             if (keyEvent.PhysicalKeycode == Key.I)
             {
                 Console.WriteLine("Toggle Interpolation -----------------------------");
-                _droneService.ToggleInterpolation();
+                switch (Mode)
+                {
+                    case ApplicationMode.Drone:
+                        _droneService.ToggleInterpolation();
+                        break;
+                    case ApplicationMode.Operator:
+                        _operatorService.ToggleInterpolation();
+                        break;
+                }
             }
         }
     }

@@ -64,6 +64,7 @@ public class NetworkClient
             catch (Exception ex)
             {
                 Console.WriteLine($"Error receiving message: {ex.Message}");
+                Console.WriteLine($"trace: {ex.StackTrace}");
             }
         }
     }
