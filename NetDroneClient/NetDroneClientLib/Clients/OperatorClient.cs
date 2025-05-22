@@ -9,13 +9,14 @@ public class OperatorClient : AbstractNetDroneClient
 {
     private readonly MovementQueue _movementQueue = new();
     private int _messageId = 1;
+    private readonly Dictionary<int, Vec3> _moveStore = [];
 
     public OperatorClient(int clientPort, int serverPort, string serverIp, int droneId, int operatorId)
     {
         ClientPort = clientPort;
         ServerPort = serverPort;
         ServerIp = serverIp;
-        DroneState = new DroneState { Id = droneId, OperatorId = operatorId};
+        DroneState = new DroneState { Id = droneId, OperatorId = operatorId };
         SetupUdpConnection();
     }
 
@@ -32,20 +33,34 @@ public class OperatorClient : AbstractNetDroneClient
         Console.WriteLine($"Fetching latest location from drone: {position}");
         return position;
     }
-    
-    
+
     protected override void HandleIncomingMessages()
     {
         _networkClient.OnMessageReceived += message =>
         {
             Console.WriteLine($"Received location update from drone {message.DroneId}");
-            var data = message.Command.Data;
-            DroneState.Position = new Vec3
+            Console.WriteLine($"Preforming reconciliation...");
+            if (_moveStore.TryGetValue(message.MessageId, out var vector) && vector is not null)
             {
-                X = data.X,
-                Y = data.Y,
-                Z = data.Z
-            };
+                if (!vector.Equals(DroneState.Position))
+                {
+                    // If drone position is not equal to drone position in store,
+                    // store is updated to actual position.
+                    DroneState.Position = message.Command.Data;
+                }
+                _moveStore.Remove(message.MessageId);
+            }
+            else
+            {
+                // If state update is not an answer to a Move command, 
+                // update position in store incase of unintended movement (wind drift, etc).
+                DroneState.Position = message.Command.Data;
+            }
         };
+        if (_moveStore.Count <= 50)
+        {
+            // clear old moves in case of mem leak
+            _moveStore.Clear();
+        }
     }
 }
