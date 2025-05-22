@@ -20,7 +20,7 @@ public class DroneService
     
     public void ToggleInterpolation()
     {
-        var shouldInterpolate = !DroneClient._movementQueue.ShouldInterpolate;
+        var shouldInterpolate = !DroneClient.MovementQueue.ShouldInterpolate;
         DroneClient.SetMovementInterpolation(shouldInterpolate);
     }
     

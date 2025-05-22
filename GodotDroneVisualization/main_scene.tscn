@@ -1,10 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://cg0psqjqlgrlg"]
+[gd_scene load_steps=4 format=3 uid="uid://cg0psqjqlgrlg"]
 
-[ext_resource type="Script" uid="uid://cfoukcljaa1m1" path="res://Entities/Drone.cs" id="1_0f027"]
-[ext_resource type="Texture2D" uid="uid://bsodtxnwb0aui" path="res://Assets/map_2.png" id="1_gyfs4"]
-[ext_resource type="Texture2D" uid="uid://bou6up4ugwnq8" path="res://Assets/drone.png" id="2_d5x1h"]
-
-[sub_resource type="Theme" id="Theme_gyfs4"]
+[ext_resource type="Script" path="res://Entities/Drone.cs" id="1_0f027"]
+[ext_resource type="Texture2D" path="res://Assets/map_2.png" id="1_gyfs4"]
+[ext_resource type="Texture2D" path="res://Assets/drone.png" id="2_d5x1h"]
 
 [node name="Node2D" type="Node2D"]
 
@@ -16,12 +14,3 @@ texture = ExtResource("1_gyfs4")
 [node name="Drone" type="Sprite2D" parent="."]
 texture = ExtResource("2_d5x1h")
 script = ExtResource("1_0f027")
-
-[node name="ModeLabel" type="Label" parent="."]
-offset_left = 315.0
-offset_top = 15.0
-offset_right = 415.0
-offset_bottom = 54.0
-theme = SubResource("Theme_gyfs4")
-theme_type_variation = &"HeaderLarge"
-text = "Error"
