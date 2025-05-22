@@ -26,7 +26,7 @@ public class Command
 
 public class Message
 {
-    [JsonPropertyName("tick")] public int Tick { get; set; }
+    [JsonPropertyName("message_id")] public int MessageId { get; set; }
     [JsonPropertyName("drone_id")] public int DroneId { get; set; }
     [JsonPropertyName("operator_id")] public int OperatorId { get; set; }
     [JsonPropertyName("command")] public Command Command { get; set; } = new();
