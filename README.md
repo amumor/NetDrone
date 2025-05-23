@@ -27,7 +27,10 @@ Reconciliation is a technique used in networked applications to correct discrepa
 Our solution uses an ID-based movement system: the operator sends movement commands to the drone, each tagged with a unique ID. The drone responds with its current state, including the ID. If the returned state does not match the expected move, the drone´s state is considered authoritative and the client corrects its local state accordingly.
 
 ### Interpolation
-TODO
+Interpolation creates smoother movement by calculating and executing intermediate steps between positions.
+Both the Operator and Drone use a MovementQueue to split movements into these smaller, interpolated steps.
+In Godot, each tick fetches the next step from the queue to update the drone sprite’s position.
+To reduce network load, the drone only sends its final position to the operator, not every interpolated step.
 
 ## Future Work and Current Limitations 
 TODO
@@ -67,9 +70,44 @@ To start the demo implementing NetDroneServerLib and NetDroneClientLib, follow t
    ./runNetDrone.sh both
    ```
 
-
 ### Using NetDroneClientLib
-TODO
+The NetDroneClient can be one of two types:
+#### Operator:
+This client represents the operator of the drone and sends location updates to the drone client. The operator has it's drone state that interpolates movement based on input and reconsiles with location updates from the drone.
+#### Drone:
+The DroneClient is used by the physical drone (in our case simulated in Godot) and recieves movement commands from the operator.
+### Usage:
+```cs
+// Operator mode
+var operatorClient = new OperatorClient(
+    clientPort: 5002,
+    serverPort: 4002,
+    serverIp: "127.0.0.1",
+    droneId: 1,
+    operatorId: 1,
+    interpolationRate: 6
+);
+
+operatorClient.MovementQueue;
+operatorClient.GetNextMovement();
+operatorClient.SendCommandToDrone(command);
+operatorClient.SetMovementInterpolation(true);
+operatorClient.SetReconciliation(true);
+
+// Drone mode
+var droneClient = new DroneClient(
+    clientPort: 5001,
+    serverPort: 4001,
+    serverIp: "127.0.0.1",
+    droneId: 1,
+    operatorId: 1,
+    interpolationRate: 6
+);
+
+droneClient.GetNextMovement();
+droneClient.MovementQueue;
+droneClient.SetMovementInterpolation;
+```
 
 ### Using NetDroneServerLib
 Server example usage:
