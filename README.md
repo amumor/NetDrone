@@ -73,7 +73,7 @@ To start the demo implementing NetDroneServerLib and NetDroneClientLib, follow t
 ### Using NetDroneClientLib
 The NetDroneClient can be one of two types:
 #### Operator:
-This client represents the operator of the drone and sends location updates to the drone client. The operator has it's drone state that interpolates movement based on input and reconsiles with location updates from the drone.
+This client represents the operator of the drone and sends location updates to the drone client. The operator has it's own drone state that interpolates movement based on input and reconsiles with location updates from the drone.
 #### Drone:
 The DroneClient is used by the physical drone (in our case simulated in Godot) and recieves movement commands from the operator.
 ### Usage:
