@@ -5,14 +5,22 @@ namespace NetDroneClientLib.Clients;
 
 public class DroneClient : AbstractNetDroneClient
 {
-    public readonly MovementQueue<LocationMessage> MovementQueue = new DroneQueue();
-    private int _messageId = 1;
+    public readonly MovementQueue<MovementQueueItem> MovementQueue;
+    public int CurrentMessageId;
 
-    public DroneClient(int clientPort, int serverPort, string serverIp, int droneId, int operatorId)
+    public DroneClient (
+        int clientPort,
+        int serverPort, 
+        string serverIp,
+        int droneId,
+        int operatorId,
+        int interpolationRate
+    ) 
     {
         ClientPort = clientPort;
         ServerPort = serverPort;
         ServerIp = serverIp;
+        MovementQueue = new DroneQueue { StepCount = interpolationRate };
         DroneState = new DroneState { Id = droneId, OperatorId = operatorId, Position = new Vec3()};
         SetupUdpConnection();
     }
@@ -32,23 +40,22 @@ public class DroneClient : AbstractNetDroneClient
         _networkClient.SendCommand(messageId, command, DroneState.Id, DroneState.OperatorId);
     }
 
-    public LocationMessage? GetNextMovement()
+    public MovementQueueItem? GetNextMovement()
     {
         var locationMessage = MovementQueue.GetNextMovement();
         if (locationMessage == null)
         {
             return null;
         }
-        
-        if (locationMessage.MessageId != 0)
+    
+        if (!locationMessage.IsInterpolated)
         {
-            SendLocationToOperator(locationMessage.MessageId, locationMessage.Position);
-            _messageId = locationMessage.MessageId;
+            SendLocationToOperator(CurrentMessageId, locationMessage.Position);
         }
         return locationMessage;
     }
     
-    public void SetMovementInterpolation(bool shouldInterpolate)
+    public override void SetMovementInterpolation(bool shouldInterpolate)
     {
         MovementQueue.ShouldInterpolate = shouldInterpolate;
     }
@@ -58,10 +65,12 @@ public class DroneClient : AbstractNetDroneClient
         _networkClient.OnMessageReceived += message =>
         {
             Console.WriteLine($"Received command from operator {message.OperatorId}");
+            
+            CurrentMessageId = message.MessageId;
+            
             MovementQueue.AddMovement(
-                new LocationMessage
+                new MovementQueueItem
                 {
-                    MessageId = message.MessageId,
                     Position = message.Command.Data
                 }
             );

@@ -14,7 +14,8 @@ public class DroneService
             serverPort: 4001,
             serverIp: "127.0.0.1",
             droneId: 1,
-            operatorId: 1
+            operatorId: 1,
+            interpolationRate: 6
         );
     }
     
@@ -24,7 +25,7 @@ public class DroneService
         DroneClient.SetMovementInterpolation(shouldInterpolate);
     }
     
-    public LocationMessage GetNextMovement()
+    public MovementQueueItem GetNextMovement()
     {
         return DroneClient.GetNextMovement();
     }

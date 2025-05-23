@@ -33,6 +33,8 @@ public abstract class AbstractNetDroneClient
     }
 
     protected abstract void HandleIncomingMessages();
+    
+    public abstract void SetMovementInterpolation(bool shouldInterpolate);
 
     public void Disconnect()
     {

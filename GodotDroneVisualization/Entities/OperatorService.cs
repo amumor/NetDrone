@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NetDroneClientLib.Clients;
 using NetDroneClientLib.Models;
 using NetDroneServerLib.Models;
@@ -16,7 +17,8 @@ public class OperatorService
             serverPort: 4002,
             serverIp: "127.0.0.1",
             droneId: 1,
-            operatorId: 1
+            operatorId: 1,
+            interpolationRate: 6
         );
     }
     
@@ -24,12 +26,12 @@ public class OperatorService
     {
         var pos = new Vec3 { X = x, Y = y, Z = z };
         OperatorClient.DroneState.Position = pos;
-        // Only enqueue if the queue is empty or the last enqueued movement is different
+        
         var queue = OperatorClient.MovementQueue;
-        if (queue._movements.Count == 0 || !pos.Equals(queue._lastMovement))
+        if (queue.Movements.Count == 0 || !pos.Equals(queue.LastMovement))
         {
-            queue._movements.Clear(); // Optional: clear to avoid lag
-            OperatorClient.UpdateDronePosition(pos);
+            queue.Movements.Clear(); 
+            queue.AddMovement(pos);
         }
 
         var command = new Command

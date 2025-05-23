@@ -88,46 +88,22 @@ public partial class Drone : Sprite2D
 
     private void RunOperatorSend()
     {
-        Vector2 newPosition;
+        int newX = (int)Position.X;
+        int newY = (int)Position.Y;
 
-        if (Input.IsActionPressed("ui_right") && Position.X < ViewportWidth - DroneDimension / 2)
-        {
-            newPosition = new Vector2(Position.X + MovementSpeed, Position.Y);
-            _operatorService.MoveDrone(
-                (int)newPosition.X,
-                (int)newPosition.Y,
-                0
-            );
-        }
+        if (Input.IsActionPressed("ui_right") && newX < ViewportWidth - DroneDimension / 2)
+            newX += MovementSpeed;
+        if (Input.IsActionPressed("ui_left") && newX > DroneDimension / 2)
+            newX -= MovementSpeed;
+        if (Input.IsActionPressed("ui_up") && newY > DroneDimension / 2)
+            newY -= MovementSpeed;
+        if (Input.IsActionPressed("ui_down") && newY < ViewportHeight - DroneDimension / 2)
+            newY += MovementSpeed;
 
-        if (Input.IsActionPressed("ui_left") && Position.X > DroneDimension / 2)
+        // Only send if position changed
+        if (newX != (int)Position.X || newY != (int)Position.Y)
         {
-            newPosition = new Vector2(Position.X - MovementSpeed, Position.Y);
-            _operatorService.MoveDrone(
-                (int)newPosition.X,
-                (int)newPosition.Y,
-                0
-            );
-        }
-
-        if (Input.IsActionPressed("ui_up") && Position.Y > DroneDimension / 2)
-        {
-            newPosition = new Vector2(Position.X, Position.Y - MovementSpeed);
-            _operatorService.MoveDrone(
-                (int)newPosition.X,
-                (int)newPosition.Y,
-                0
-            );
-        }
-
-        if (Input.IsActionPressed("ui_down") && Position.Y < ViewportHeight - DroneDimension / 2)
-        {
-            newPosition = new Vector2(Position.X, Position.Y + MovementSpeed);
-            _operatorService.MoveDrone(
-                (int)newPosition.X,
-                (int)newPosition.Y,
-                0
-            );
+            _operatorService.MoveDrone(newX, newY, 0);
         }
     }
 
@@ -139,6 +115,7 @@ public partial class Drone : Sprite2D
             return;
         }
         Position = new Vector2(nextMovement.X, nextMovement.Y);
+        Console.WriteLine($"Current position: {Position}");
     }
 
     private void RunDroneMode()

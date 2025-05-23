@@ -1,34 +1,39 @@
 using NetDroneClientLib.Models;
 using NetDroneServerLib.Models;
 
-namespace net_drone_client.Util;
+namespace NetDroneClientLib.Util;
 
 public static class Interpolator
 {
-    public static List<LocationMessage> InterpolateDroneMovement(int messageId, Vec3 start, Vec3 end, int steps)
+    private static Vec3 InterpolateVec3(Vec3 start, Vec3 end, float t)
     {
-        var messages = new List<LocationMessage>();
+        return new Vec3
+        {
+            X = (int)(start.X + (end.X - start.X) * t),
+            Y = (int)(start.Y + (end.Y - start.Y) * t),
+            Z = (int)(start.Z + (end.Z - start.Z) * t)
+        };
+    }
+
+    public static List<MovementQueueItem> InterpolateDroneMovement(Vec3 start, Vec3 end, int steps)
+    {
+        var messages = new List<MovementQueueItem>();
 
         for (var i = 0; i <= steps; i++)
         {
             var t = (float)i / steps;
-            var position = new Vec3 
-            { 
-                X = (int)(start.X + (end.X - start.X) * t),
-                Y = (int)(start.Y + (end.Y - start.Y) * t),
-                Z = (int)(start.Z + (end.Z - start.Z) * t)
-            };
-        
-            messages.Add(new LocationMessage 
-            { 
-                MessageId = i == steps ? messageId : 0, 
-                Position = position 
+            var position = InterpolateVec3(start, end, t);
+
+            messages.Add(new MovementQueueItem
+            {
+                IsInterpolated = i != steps,
+                Position = position
             });
         }
-    
+
         return messages;
     }
-    
+
     public static List<Vec3> InterpolateOperatorMovement(Vec3 start, Vec3 end, int steps)
     {
         var interpolatedPoints = new List<Vec3>();
@@ -36,10 +41,7 @@ public static class Interpolator
         for (var i = 0; i <= steps; i++)
         {
             var t = (float)i / steps;
-            var x = (int)(start.X + (end.X - start.X) * t);
-            var y = (int)(start.Y + (end.Y - start.Y) * t);
-            var z = (int)(start.Z + (end.Z - start.Z) * t);
-            interpolatedPoints.Add(new Vec3 { X = x, Y = y, Z = z });
+            interpolatedPoints.Add(InterpolateVec3(start, end, t));
         }
 
         return interpolatedPoints;
