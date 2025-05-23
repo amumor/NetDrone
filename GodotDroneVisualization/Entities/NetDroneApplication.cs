@@ -1,17 +1,17 @@
-
 using System;
 using System.Linq;
+using NetDroneClientLib.Clients;
 using NetDroneServerLib.Models;
 
 namespace GodotDroneVisualization.Entities;
 
 using Godot;
 
-public partial class Drone : Sprite2D
+public partial class NetDroneApplication : Sprite2D
 {
     public ApplicationMode Mode { get; private set; }
-    private readonly DroneService _droneService = new();
-    private readonly OperatorService _operatorService = new();
+    private DroneClient _droneClient;
+    private OperatorClient _operatorClient;
     private const float DroneDimension = 50.0f;
     private const float ViewportWidth = 1600.0f;
     private const float ViewportHeight = 800.0f;
@@ -25,6 +25,45 @@ public partial class Drone : Sprite2D
     private float _operatorSendTickRate = 0.1f;
     private float _operatorReceiveTickRate = 0.01f;
 
+    private void SetApplicationMode(string[] args)
+    {
+        if (args.Contains("--operator"))
+        {
+            GD.Print("Operator mode activated");
+            Mode = ApplicationMode.Operator;
+            
+            _operatorClient = new OperatorClient(
+                clientPort: 5002,
+                serverPort: 4002,
+                serverIp: "127.0.0.1",
+                droneId: 1,
+                operatorId: 1,
+                interpolationRate: 6
+            );
+            
+            _operatorClient.DroneState.Position = new Vec3
+            {
+                X = (int)Position.X,
+                Y = (int)Position.Y,
+                Z = 0
+            };
+        }
+        else if (args.Contains("--drone"))
+        {
+            GD.Print("Drone mode activated");
+            Mode = ApplicationMode.Drone;
+            
+            _droneClient = new DroneClient(
+                clientPort: 5001,
+                serverPort: 4001,
+                serverIp: "127.0.0.1",
+                droneId: 1,
+                operatorId: 1,
+                interpolationRate: 6
+            );
+        }
+    }
+    
     public override void _Ready()
     {
         GetWindow().MinSize = new Vector2I(1600, 800);
@@ -33,7 +72,7 @@ public partial class Drone : Sprite2D
         SetApplicationMode(arguments);
         GetWindow().Title = $"Mode: {Mode}";
         var label = GetParent().GetNode<Label>("ModeLabel");
-        label.Text = $"Mode: {Mode}\nPress 'I' to toggle interpolation";
+        label.Text = $"Mode: {Mode}, Press 'I' to toggle interpolation, press 'R' to toggle reconciliation";
 
         Position = new Vector2(
             ViewportWidth / 2,
@@ -84,8 +123,9 @@ public partial class Drone : Sprite2D
             default:
                 throw new ArgumentOutOfRangeException();
         }
-    }
+    } 
 
+// OPERATOR MODE -------------------------------------------------------------------------------------------------------
     private void RunOperatorSend()
     {
         int newX = (int)Position.X;
@@ -103,13 +143,13 @@ public partial class Drone : Sprite2D
         // Only send if position changed
         if (newX != (int)Position.X || newY != (int)Position.Y)
         {
-            _operatorService.MoveDrone(newX, newY, 0);
+            MoveDrone(newX, newY, 0);
         }
     }
 
     private void RunOperatorUpdate()
     {
-        var nextMovement = _operatorService.GetNextMovement();
+        var nextMovement = _operatorClient.GetNextMovement();
         if (nextMovement == null)
         {
             return;
@@ -117,23 +157,43 @@ public partial class Drone : Sprite2D
         Position = new Vector2(nextMovement.X, nextMovement.Y);
         Console.WriteLine($"Current position: {Position}");
     }
+    
+    public void MoveDrone(int x, int y, int z)
+    {
+        var pos = new Vec3 { X = x, Y = y, Z = z };
+        _operatorClient.DroneState.Position = pos;
+        
+        var queue = _operatorClient.MovementQueue;
+        if (queue.Movements.Count == 0 || !pos.Equals(queue.LastMovement))
+        {
+            queue.Movements.Clear(); 
+            queue.AddMovement(pos);
+        }
+
+        var command = new Command
+        {
+            Cmd = CommandType.Move,
+            Data = new Vec3 { X = x, Y = y, Z = z }
+        };
+        _operatorClient.SendCommandToDrone(command);
+    }
+    
+// DRONE MODE ----------------------------------------------------------------------------------------------------------
 
     private void RunDroneMode()
     {
-        var locationMessage = _droneService.GetNextMovement();
+        var locationMessage = _droneClient.GetNextMovement();
         if (locationMessage == null)
         {
             return;
         }
         var movement = locationMessage.Position;
-        // Only update if movement is not zero
         if (movement.X != 0 || movement.Y != 0)
         {
             Position = new Vector2(movement.X, movement.Y);
-            // Update the internal drone state as well
-            if (_droneService.DroneClient != null)
+            if (_droneClient != null)
             {
-                _droneService.DroneClient.DroneState.Position = new Vec3
+                _droneClient.DroneState.Position = new Vec3
                 {
                     X = (int)Position.X,
                     Y = (int)Position.Y,
@@ -142,46 +202,34 @@ public partial class Drone : Sprite2D
             }
         }
     }
-
+    
+// Interpolation toggling ----------------------------------------------------------------------------------------------
     public override void _Input(InputEvent @event)
     {
-        if (@event is InputEventKey keyEvent && keyEvent.Pressed && !keyEvent.Echo)
+        if (@event is not InputEventKey { Pressed: true, Echo: false } keyEvent)
+            return;
+
+        switch (keyEvent.PhysicalKeycode)
         {
-            if (keyEvent.PhysicalKeycode == Key.I)
-            {
+            case Key.I:
                 Console.WriteLine("Toggle Interpolation -----------------------------");
                 switch (Mode)
                 {
                     case ApplicationMode.Drone:
-                        _droneService.ToggleInterpolation();
+                        _droneClient.SetMovementInterpolation(!_droneClient.MovementQueue.ShouldInterpolate);
                         break;
                     case ApplicationMode.Operator:
-                        _operatorService.ToggleInterpolation();
+                        _operatorClient.SetMovementInterpolation(!_operatorClient.MovementQueue.ShouldInterpolate);
                         break;
                 }
-            }
-        }
-    }
-
-    private void SetApplicationMode(string[] args)
-    {
-        if (args.Contains("--operator"))
-        {
-            GD.Print("Operator mode activated");
-            Mode = ApplicationMode.Operator;
-            _operatorService.Setup();
-            _operatorService.OperatorClient.DroneState.Position = new Vec3
-            {
-                X = (int)Position.X,
-                Y = (int)Position.Y,
-                Z = 0
-            };
-        }
-        else if (args.Contains("--drone"))
-        {
-            GD.Print("Drone mode activated");
-            Mode = ApplicationMode.Drone;
-            _droneService.Setup();
+                break;
+            case Key.R:
+                Console.WriteLine("R key pressed");
+                if (Mode == ApplicationMode.Operator)
+                {
+                    _operatorClient.SetReconciliation(!_operatorClient.ShouldReconcile);
+                }
+                break;
         }
     }
 }

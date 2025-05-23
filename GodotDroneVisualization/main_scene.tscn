@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cg0psqjqlgrlg"]
 
-[ext_resource type="Script" uid="uid://cfoukcljaa1m1" path="res://Entities/Drone.cs" id="1_0f027"]
+[ext_resource type="Script" uid="uid://cfoukcljaa1m1" path="res://Entities/NetDroneApplication.cs" id="1_0f027"]
 [ext_resource type="Texture2D" uid="uid://bsodtxnwb0aui" path="res://Assets/map_2.png" id="1_gyfs4"]
 [ext_resource type="Texture2D" uid="uid://bou6up4ugwnq8" path="res://Assets/drone.png" id="2_d5x1h"]
 

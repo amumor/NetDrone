@@ -8,6 +8,7 @@ public class OperatorClient : AbstractNetDroneClient
     public readonly MovementQueue<Vec3> MovementQueue;
     private readonly Dictionary<int, Vec3> _moveStore = [];
     private int _messageId = 1;
+    public bool ShouldReconcile { get; set; }
 
     public OperatorClient (
         int clientPort,
@@ -41,24 +42,30 @@ public class OperatorClient : AbstractNetDroneClient
     
     public override void SetMovementInterpolation(bool shouldInterpolate) =>
         MovementQueue.ShouldInterpolate = shouldInterpolate;
+    
+    public void SetReconciliation(bool shouldReconcile) =>
+        ShouldReconcile = shouldReconcile;
 
     protected override void HandleIncomingMessages()
     {
         _networkClient.OnMessageReceived += message =>
         {
+            if (!ShouldReconcile)
+                return;
+            
             if (_moveStore.TryGetValue(message.MessageId, out var vector) && vector is not null)
             {
                 if (vector.X == DroneState.Position.X
                         && vector.Y == DroneState.Position.Y
                         && vector.Z == DroneState.Position.Z)
                 {
-                    DroneState.Position = message.Command.Data;
+                    MovementQueue.AddMovement(vector);
                 }
                 _moveStore.Remove(message.MessageId);
             }
             else
             {
-                DroneState.Position = message.Command.Data;
+                MovementQueue.AddMovement(message.Command.Data);
             }
         };
         if (_moveStore.Count <= 50)

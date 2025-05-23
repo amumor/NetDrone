@@ -14,7 +14,7 @@ public partial class InfoPanel : Godot.PanelContainer
         // Create a vertical container
         var vbox = new VBoxContainer();
         
-        var drone = GetNode<Drone>("/Drone");
+        var drone = GetNode<NetDroneApplication>("/Drone");
         var titleLabel = new Label { Text = drone.Mode.ToString() };
         
         // Add labels to container
