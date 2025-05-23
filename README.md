@@ -32,8 +32,9 @@ Both the Operator and Drone use a MovementQueue to split movements into these sm
 In Godot, each tick fetches the next step from the queue to update the drone sprite’s position.
 To reduce network load, the drone only sends its final position to the operator, not every interpolated step.
 
-## Future Work and Current Limitations 
-TODO
+## Future Work and Current Limitations
+
+The current demo is set up for a single operator and a single drone, with limited movement capabilities that may not fully translate to real-world drone dynamics. Future improvements could include developing a more advanced library to handle complex drone inputs. We also want to make the codebase more modular to better support additional features and usages.
 
 ## External Dependencies
 The only external dependency in this project is the Godot open source game engine with C#, used for the visualization. The libraries can easily be used with other forms of UI.
