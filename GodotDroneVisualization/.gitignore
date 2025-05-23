@@ -1,3 +1,9 @@
 # Godot 4+ specific ignores
-.godot/
+.godot/*
+
+# un-ignore asset imports to fix first time run bug.
+!.godot/imported/
+!.godot/imported/**
+
+
 /android/
