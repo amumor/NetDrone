@@ -1,16 +1,16 @@
-namespace GodotDroneVisualization.Entities;
+namespace GodotDroneVisualization.Utils;
 
 using System;
 using System.Collections.Generic;
 using Godot;
 
-public class TickSystem
+public class RefreshCycle
 {
-    private readonly Dictionary<string, TickTimer> _timers = new();
+    private readonly Dictionary<string, Timer> _timers = new();
     
     public void CreateTimer(string name, float interval, bool autoReset = true)
     {
-        _timers[name] = new TickTimer(interval, autoReset);
+        _timers[name] = new Timer(interval, autoReset);
     }
     
     public void Update(float delta)
@@ -42,14 +42,14 @@ public class TickSystem
         }
     }
     
-    private class TickTimer
+    private class Timer
     {
         private float _interval;
         private float _elapsed;
         private bool _autoReset;
         private bool _isReady;
         
-        public TickTimer(float interval, bool autoReset)
+        public Timer(float interval, bool autoReset)
         {
             _interval = interval;
             _autoReset = autoReset;

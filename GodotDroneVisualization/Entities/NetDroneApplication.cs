@@ -2,10 +2,10 @@ using System;
 using System.Linq;
 using NetDroneClientLib.Clients;
 using NetDroneServerLib.Models;
+using Godot;
+using GodotDroneVisualization.Utils;
 
 namespace GodotDroneVisualization.Entities;
-
-using Godot;
 
 public partial class NetDroneApplication : Sprite2D
 {
@@ -17,11 +17,11 @@ public partial class NetDroneApplication : Sprite2D
     private const float ViewportHeight = 800.0f;
     private const int MovementSpeed = 25;
 
-    // Tick system
-    private readonly TickSystem _tickSystem = new();
+    // Refresh system
+    private readonly RefreshCycle _refreshCycle = new();
 
-    // Configurable tick rates
-    private float _droneTickRate = 0.01f;
+    // Configurable refresh rates
+    private float _droneTickRate = 0.01f; 
     private float _operatorSendTickRate = 0.1f;
     private float _operatorReceiveTickRate = 0.01f;
 
@@ -91,30 +91,30 @@ public partial class NetDroneApplication : Sprite2D
 
     private void SetupTickSystem()
     {
-        _tickSystem.CreateTimer("drone_update", _droneTickRate);
-        _tickSystem.CreateTimer("operator_send", _operatorSendTickRate);
-        _tickSystem.CreateTimer("operator_receive", _operatorReceiveTickRate);
+        _refreshCycle.CreateTimer("drone_update", _droneTickRate);
+        _refreshCycle.CreateTimer("operator_send", _operatorSendTickRate);
+        _refreshCycle.CreateTimer("operator_receive", _operatorReceiveTickRate);
     }
 
     public override void _Process(double delta)
     {
-        _tickSystem.Update((float)delta);
+        _refreshCycle.Update((float)delta);
 
         switch (Mode)
         {
             case ApplicationMode.Drone:
-                if (_tickSystem.IsReady("drone_update"))
+                if (_refreshCycle.IsReady("drone_update"))
                 {
                     RunDroneMode();
                 }
                 break;
 
             case ApplicationMode.Operator:
-                if (_tickSystem.IsReady("operator_send"))
+                if (_refreshCycle.IsReady("operator_send"))
                 {
                     RunOperatorSend();
                 }
-                if (_tickSystem.IsReady("operator_receive"))
+                if (_refreshCycle.IsReady("operator_receive"))
                 {
                     RunOperatorUpdate();
                 }
@@ -128,8 +128,8 @@ public partial class NetDroneApplication : Sprite2D
 // OPERATOR MODE -------------------------------------------------------------------------------------------------------
     private void RunOperatorSend()
     {
-        int newX = (int)Position.X;
-        int newY = (int)Position.Y;
+        var newX = (int)Position.X;
+        var newY = (int)Position.Y;
 
         if (Input.IsActionPressed("ui_right") && newX < ViewportWidth - DroneDimension / 2)
             newX += MovementSpeed;
@@ -158,7 +158,7 @@ public partial class NetDroneApplication : Sprite2D
         Console.WriteLine($"Current position: {Position}");
     }
     
-    public void MoveDrone(int x, int y, int z)
+    private void MoveDrone(int x, int y, int z)
     {
         var pos = new Vec3 { X = x, Y = y, Z = z };
         _operatorClient.DroneState.Position = pos;
@@ -203,7 +203,7 @@ public partial class NetDroneApplication : Sprite2D
         }
     }
     
-// Interpolation toggling ----------------------------------------------------------------------------------------------
+// Interpolation/Reconciliation toggling -------------------------------------------------------------------------------
     public override void _Input(InputEvent @event)
     {
         if (@event is not InputEventKey { Pressed: true, Echo: false } keyEvent)

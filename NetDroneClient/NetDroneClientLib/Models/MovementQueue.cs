@@ -12,7 +12,6 @@ public abstract class MovementQueue<T>
 
     public void AddMovement(T movement)
     {
-        Console.WriteLine($"{movement} added to queue");
         LastMovement ??= movement;
 
         if (!ShouldInterpolate)
@@ -32,14 +31,13 @@ public abstract class MovementQueue<T>
 
     public T? GetNextMovement()
     {
-        if (Movements.Count > 0)
+        if (Movements.Count == 0)
         {
-            var movement = Movements.Dequeue();
-            Console.WriteLine($"{movement} dequeued from queue");
-            Console.WriteLine($"{Movements.Count} movements left in queue");
-            return movement;
+            return default;
+            
         }
-        return default;
+        var movement = Movements.Dequeue();
+        return movement;
     }
     
     protected abstract T ConvertToOutput(T movement);

@@ -6,7 +6,7 @@ namespace NetDroneClientLib.Clients;
 public class DroneClient : AbstractNetDroneClient
 {
     public readonly MovementQueue<MovementQueueItem> MovementQueue;
-    public int CurrentMessageId;
+    private int _currentMessageId;
 
     public DroneClient (
         int clientPort,
@@ -47,10 +47,10 @@ public class DroneClient : AbstractNetDroneClient
         {
             return null;
         }
-    
+        // This means that the drone has finished the whole movement
         if (!locationMessage.IsInterpolated)
         {
-            SendLocationToOperator(CurrentMessageId, locationMessage.Position);
+            SendLocationToOperator(_currentMessageId, locationMessage.Position);
         }
         return locationMessage;
     }
@@ -66,7 +66,7 @@ public class DroneClient : AbstractNetDroneClient
         {
             Console.WriteLine($"Received command from operator {message.OperatorId}");
             
-            CurrentMessageId = message.MessageId;
+            _currentMessageId = message.MessageId;
             
             MovementQueue.AddMovement(
                 new MovementQueueItem

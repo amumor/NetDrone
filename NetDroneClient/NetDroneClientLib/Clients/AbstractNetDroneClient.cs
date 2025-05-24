@@ -1,5 +1,3 @@
-
-
 using NetDroneClientLib.Communication;
 using NetDroneClientLib.Models;
 using NetDroneServerLib.Models;
@@ -12,7 +10,6 @@ public abstract class AbstractNetDroneClient
     protected int ServerPort { get; set; }
     protected string ServerIp { get; set; }
     public DroneState DroneState { get; set; }
-
     protected NetworkClient _networkClient;
 
     protected void SetupUdpConnection()

@@ -15,6 +15,15 @@ public class Vec3
     {
         return $"{X},{Y},{Z}";
     }
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is Vec3 other)
+        {
+            return X == other.X && Y == other.Y && Z == other.Z;
+        }
+        return false;
+    }
 }
 
 /// <summary>
