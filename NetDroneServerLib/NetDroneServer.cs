@@ -14,8 +14,6 @@ using NetDroneServerLib.Utils;
 
 public class NetDroneServer
 {
-    private readonly ConcurrentDictionary<int, IPEndPoint> _droneEndpoints = new();
-    private readonly ConcurrentDictionary<int, IPEndPoint> _operatorEndpoints = new();
 
     /// <summary>
     /// Starts the NetDrone server.
