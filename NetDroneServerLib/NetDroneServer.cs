@@ -72,7 +72,7 @@ public class NetDroneServer
                         {
                             if (IpEndPointRepository.TryGetOperator(message.OperatorId, out var endPoint) && endPoint is not null)
                             {
-                                await UdpSender.ForwardToOperatorAsync(message, endPoint, udpClient, token);
+                                await UdpSender.ForwardToOperatorAsync(message, endPoint, udpClient);
                             }
                         }
                         break;
@@ -120,7 +120,7 @@ public class NetDroneServer
                         {
                             if (IpEndPointRepository.TryGetDrone(message.DroneId, out var endPoint) && endPoint is not null)
                             {
-                                await UdpSender.ForwardToDroneAsync(message, endPoint, udpClient, token);
+                                await UdpSender.ForwardToDroneAsync(message, endPoint, udpClient);
                             }
                         }
                         break;
