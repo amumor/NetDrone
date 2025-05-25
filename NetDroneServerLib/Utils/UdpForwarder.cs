@@ -20,7 +20,7 @@ public class UdpSender
     /// <param name="udpClient">UDP Client</param>
     /// <param name="token">Cancellation token</param>
     /// <returns></returns>
-    public static async Task ForwardToOperatorAsync(Message message, IPEndPoint operatorEP, UdpClient udpClient, CancellationToken token)
+    public static async Task ForwardToOperatorAsync(Message message, IPEndPoint operatorEP, UdpClient udpClient)
     {
         try
         {
@@ -46,7 +46,7 @@ public class UdpSender
     /// <param name="udpClient">UDP Client</param>
     /// <param name="token">Cancellation token</param>
     /// <returns></returns>
-    public static async Task ForwardToDroneAsync(Message message, IPEndPoint droneEP, UdpClient udpClient, CancellationToken token)
+    public static async Task ForwardToDroneAsync(Message message, IPEndPoint droneEP, UdpClient udpClient)
     {
         try
         {
