@@ -19,10 +19,10 @@ Given that the project’s primary focus is on netcode, we intentionally kept vi
 Our solution is unidirectional in nature, meaning only the operator can issue commands to the drone. However, the system is designed to account for autonomous movements or disturbances on the drone side, such as those caused by wind or other external factors. This ensures that the operator receives accurate feedback about the drone’s actual position, even when unexpected movements occur, providing a robust and precise control experience.
 
 ### Prediction
-Prediction is a technique used in networked applications to estimate the future state of an object or system, allowing for smoother and more responsive user experiences despite network delays. The drone can only respond to commands sent by the operator, therefore no prediction is possible. On the operator side, the simulated drone moves immediately when the user sends input to the server, providing a responsive user experience. Since there is no risk of cheating in this setup, server-side prediction is unnecessary.
+Prediction is a technique used in networked applications to estimate the future state of an object or system, allowing for smoother and more responsive user experiences despite network delays. The drone can only respond to commands sent by the operator, therefore no prediction is possible. On the operator side, the simulated drone moves immediately when the user sends input to the server, providing a more responsive user experience for the operator. Since there is no risk of cheating in this setup, server-side prediction is unnecessary.
 
 ### Reconciliation
-Reconciliation is a technique used in networked applications to correct discrepancies between the client’s predicted state and the actual state received from the server. In our system, reconciliation ensures that the operator’s view of the drone’s position remains accurate, even if the drone experiences unexpected movements or disturbances. When the drone sends updated position data, the client can adjust its local state to match, maintaining consistency and a smooth user experience.
+Reconciliation is a technique used in networked applications to correct discrepancies between the client’s predicted state and the actual state received from the server. In our system, reconciliation ensures that the operator’s view of the drone’s position remains accurate, even if the drone experiences unexpected movements or disturbances (i.e. the drone drifting because of wind or no-fly zones). When the drone sends updated position data, the client can adjust it's local state to match, maintaining consistency and making it easier for the operator to react to changes.
 
 Our solution uses an ID-based movement system: the operator sends movement commands to the drone, each tagged with a unique ID. The drone responds with its current state, including the ID. If the returned state does not match the expected move, the drone´s state is considered authoritative and the client corrects its local state accordingly.
 
@@ -34,7 +34,7 @@ To reduce network load, the drone only sends its final position to the operator,
 
 ## Future Work and Current Limitations
 
-The current demo is set up for a single operator and a single drone, with limited movement capabilities that may not fully translate to real-world drone dynamics. Future improvements could include developing a more advanced library to handle complex drone inputs. We also want to make the codebase more modular to better support additional features and usages.
+The current demo is set up for a single operator and a single drone, with limited movement capabilities that may not fully translate to real-world drone dynamics. Future improvements could include developing a more advanced library to handle complex drone inputs. We also want to make the codebase more modular to better support additional features and usages. For the Godot visualization it would also have been beneficial to add some external factors that would alter the movement of the drone like wind, to make the reconsiliation feature more noticable.
 
 ## External Dependencies
 The only external dependency in this project is the Godot open source game engine with C#, used for the visualization. The libraries can easily be used with other forms of UI.
