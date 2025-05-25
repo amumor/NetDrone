@@ -37,6 +37,7 @@ public class DroneClient : AbstractNetDroneClient
                 Z = currentLocation.Z
             }
         };
+        Console.WriteLine($"Sending location to operator {DroneState.OperatorId} with message ID {messageId} \n");
         _networkClient.SendCommand(messageId, command, DroneState.Id, DroneState.OperatorId);
     }
 
@@ -64,7 +65,11 @@ public class DroneClient : AbstractNetDroneClient
     {
         _networkClient.OnMessageReceived += message =>
         {
-            Console.WriteLine($"Received command from operator {message.OperatorId}");
+            
+            Console.WriteLine(
+                new string('-', 80) + "\n" +
+                $"Received command from operator {message.OperatorId}"  
+            );
             
             _currentMessageId = message.MessageId;
             

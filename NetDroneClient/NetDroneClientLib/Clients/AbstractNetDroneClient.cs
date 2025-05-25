@@ -27,6 +27,7 @@ public abstract class AbstractNetDroneClient
             Data = null
         };
         _networkClient.SendCommand(0, command, DroneState.Id, DroneState.OperatorId);
+        Console.WriteLine($"Registering client {DroneState.Id} with operator {DroneState.OperatorId}");
     }
 
     protected abstract void HandleIncomingMessages();

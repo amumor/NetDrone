@@ -155,7 +155,6 @@ public partial class NetDroneApplication : Sprite2D
             return;
         }
         Position = new Vector2(nextMovement.X, nextMovement.Y);
-        Console.WriteLine($"Current position: {Position}");
     }
     
     private void MoveDrone(int x, int y, int z)
@@ -212,7 +211,7 @@ public partial class NetDroneApplication : Sprite2D
         switch (keyEvent.PhysicalKeycode)
         {
             case Key.I:
-                Console.WriteLine("Toggle Interpolation -----------------------------");
+                Console.WriteLine("Interpolation key pressed");
                 switch (Mode)
                 {
                     case ApplicationMode.Drone:
@@ -224,7 +223,7 @@ public partial class NetDroneApplication : Sprite2D
                 }
                 break;
             case Key.R:
-                Console.WriteLine("R key pressed");
+                Console.WriteLine("Reconciliation key pressed");
                 if (Mode == ApplicationMode.Operator)
                 {
                     _operatorClient.SetReconciliation(!_operatorClient.ShouldReconcile);

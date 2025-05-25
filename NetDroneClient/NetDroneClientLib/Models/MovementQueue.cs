@@ -36,7 +36,9 @@ public abstract class MovementQueue<T>
             return default;
             
         }
+        
         var movement = Movements.Dequeue();
+        Console.WriteLine($"Executing next movement from queue: ({movement})");
         return movement;
     }
     

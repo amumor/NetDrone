@@ -33,6 +33,11 @@ public class OperatorClient : AbstractNetDroneClient
         {
             _moveStore.Add(_messageId, command.Data);
         }
+        Console.WriteLine(
+            $"{new String('-', 80)}\n" +
+            $"Sending command [{command.Cmd}] to drone {DroneState.Id} " +
+            $"with operator {DroneState.OperatorId} and message ID {_messageId}"
+        );
         _networkClient.SendCommand(_messageId, command, DroneState.Id, DroneState.OperatorId);
         _messageId++;
     }
@@ -50,9 +55,14 @@ public class OperatorClient : AbstractNetDroneClient
     {
         _networkClient.OnMessageReceived += message =>
         {
+            Console.WriteLine(
+                $"Received command [{message.Command.Cmd}] " +
+                $"with location ({message.Command.Data}) " +
+                $"from drone {message.DroneId}\n"
+            );
             if (!ShouldReconcile)
                 return;
-            
+            Console.WriteLine("Reconciling movement with drone position...");
             if (_moveStore.TryGetValue(message.MessageId, out var vector) && vector is not null)
             {
                 if (vector.X == DroneState.Position.X
